@@ -1,0 +1,54 @@
+<c-avatar style="margin-left: 0.5rem; cursor: pointer; transform: rotate(45deg);" color="danger" textColor="white"
+  size="l" title="Delte Customer" (click)="openManageMappingModal()">
+  <svg [cIcon]="icons.cilPlus" size="xl"></svg>
+</c-avatar>
+
+
+<c-modal alignment="center" backdrop="static" size="lg" id="addCustomerGroupModal" [visible]="visibleModal"
+  (visibleChange)="handleCustomerModalChange($event)">
+  <c-modal-header>
+    <h5 cModalTitle>{{modalTitle}}</h5>
+    <button (click)="toggleCustomModal()" cButtonClose></button>
+  </c-modal-header>
+  <!-- <c-modal-body>
+    <c-row class="justify-content-center">
+      <c-col xl="11" md="4" sm="4">
+        <form>
+          <div cRow class="row mb-3 d-none">
+            <div class="col-sm-12 ">
+              <div cFormFloating>
+                <input cFormControl id="txtGroupId" placeholder="Group Id" type="number" autocomplete="off"
+                  [(ngModel)]="selectedCustomerGroup.CustomerGroupId" name="txtGroupId" />
+                <label cLabel for="txtGroupId">{{modalTextboxPlaceholder}}</label>
+              </div>
+            </div>
+          </div>
+          <div cRow class="row mb-3">
+            <div class="col-sm-12 ">
+              <div cFormFloating>
+                <input cFormControl id="txtGroupName" placeholder="Group Name" type="text" autocomplete="off"
+                  [(ngModel)]="selectedCustomerGroup.CustomerGroupName" name="txtGroupName" />
+                <label cLabel for="txtGroupName">Group Name</label>
+              </div>
+            </div>
+          </div>
+          <div cRow class="row  mb-3">
+            <div class="col-sm-12">
+              <div cFormFloating>
+                <input cFormControl id="txtGroupLocation" placeholder="Group Location" type="text" autocomplete="off"
+                  [(ngModel)]="selectedCustomerGroup.CustomerGroupLocation" name="txtGroupLocation" />
+                <label cLabel for="txtGroupLocation">Group Location</label>
+              </div>
+            </div>
+          </div>
+        </form>
+      </c-col>
+    </c-row>
+  </c-modal-body> -->
+  <c-modal-footer>
+    <button (click)="toggleCustomModal()" cButton color="secondary">
+      Cancel
+    </button>
+    <button cButton color="primary" (click)="handleModalSubmitEvent(action)">{{modalSubmitButtonText}}</button>
+  </c-modal-footer>
+</c-modal>

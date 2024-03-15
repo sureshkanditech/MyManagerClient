@@ -1,0 +1,99 @@
+<table [hover]="true" [responsive]="true" [striped]="true" align="middle" cTable class="mb-0 border">
+  <thead cTableColor="light">
+    <tr>
+      <th class="text-center">
+        <svg cIcon name="cilUser"></svg>
+      </th>
+      <th>Customer</th>
+      <th class="text-center">Address</th>
+      <th>Loan Status</th>
+      <th class="text-center">Phone Number</th>
+      <th class="text-center">Activity</th>
+    </tr>
+  </thead>
+  <tbody>
+    <ng-container *ngFor="let user of users; index as i">
+      <tr>
+        <td class="text-center">
+          <c-avatar size="md" src="{{ user.avatar }}" status="{{ user.status }}"></c-avatar>
+        </td>
+        <td>
+          <div>{{ user.name }} {{i}}</div>
+          <div class="small text-medium-emphasis text-nowrap">
+            <span>
+              Start: {{ user.state }} | End: {{ user.registered }}
+            </span>
+          </div>
+        </td>
+        <td class="text-center">
+          <div>{{ user.name }} {{i}}</div>
+        </td>
+        <td>
+          <div class="d-flex justify-content-between">
+            <div class="float-start">
+              <strong>{{ user.usage }}%</strong>
+            </div>
+            <div class="float-end ms-1 text-nowrap">
+              <small class="text-medium-emphasis">
+                {{ user.period }}
+              </small>
+            </div>
+          </div>
+          <c-progress thin>
+            <c-progress-bar [value]="user.usage" color="{{ user.color }}"></c-progress-bar>
+          </c-progress>
+        </td>
+        <td class="text-center">
+          <div>{{ user.name }} {{i}}</div>
+        </td>
+        <td class="text-center">
+          <div style=" width: 100%; display: flex;">
+            <app-manage-loan-widget type="AddLoan"></app-manage-loan-widget>
+            <app-manage-loan-widget type="AddEMI"></app-manage-loan-widget>
+            <app-manage-customer-group-customer-map-widget></app-manage-customer-group-customer-map-widget>
+          </div>
+        </td>
+      </tr>
+    </ng-container>
+  </tbody>
+</table>
+
+<c-container>
+  <c-row class="justify-content-center">
+    <c-col xl="3" md="4" sm="4" style="margin-bottom: 10px; margin-top: 10px;">
+      <app-add-new-widget type="Customer"></app-add-new-widget>
+    </c-col>
+  </c-row>
+</c-container>
+
+
+
+
+
+
+<c-modal alignment="center" backdrop="static" size="sm" id="liveDemoModal" [visible]="visible"
+  (visibleChange)="handleLiveDemoChange($event)">
+  <c-modal-header>
+    <h5 cModalTitle>{{modalTitle}}</h5>
+    <button (click)="toggleLiveDemo()" cButtonClose></button>
+  </c-modal-header>
+  <c-modal-body>
+    <c-row class="justify-content-center">
+      <c-col xl="8" md="4" sm="4">
+        <form>
+          <div cFormFloating>
+            <input cFormControl id="txtInvestment" placeholder="{{modalTextboxPlaceholder}}" type="number"
+              autocomplete="off" [(ngModel)]="modifiedInvestment" name="txtInvestment" />
+            <label cLabel for="txtInvestment">{{modalTextboxPlaceholder}}</label>
+          </div>
+        </form>
+      </c-col>
+    </c-row>
+  </c-modal-body>
+  <c-modal-footer>
+    <button (click)="toggleLiveDemo()" cButton color="secondary">
+      Close
+    </button>
+    <button cButton color="primary" (click)="handleModalSubmitEvent(action)">{{modalSubmitButtonText}}</button>
+  </c-modal-footer>
+</c-modal>

@@ -1,0 +1,89 @@
+<c-avatar *ngIf="type=='AddEMI'" style="margin-left: 0.5rem; cursor: pointer;" color="info" textColor="white" size="l"
+  title="Collect EMI" (click)="openAddNewModal()">
+  <svg [cIcon]="icons.cilMinus" size="xl"></svg>
+</c-avatar>
+<c-avatar style="margin-left: 0.5rem; cursor: pointer; " color="primary" textColor="white" size="l" title="Add Loan"
+  (click)="openAddNewModal()" *ngIf="type=='AddLoan'">
+  <svg [cIcon]="icons.cilPlus" size="xl"></svg>
+</c-avatar>
+
+<c-modal alignment="center" backdrop="static" size="lg" id="addCustomerGroupModal" [visible]="visibleAddLoan"
+  (visibleChange)="handleAddLoanChange($event)">
+  <c-modal-header>
+    <h5 cModalTitle>{{modalTitle}}</h5>
+    <button (click)="toggleAddLoanModal()" cButtonClose></button>
+  </c-modal-header>
+  <c-modal-body>
+    <c-row class="justify-content-center">
+      <c-col xl="11" md="4" sm="4">
+        <form>
+          <div cRow class="form-group row">
+            <div class="col-sm-6">
+              <input type="text" readonly class="form-control-plaintext"
+                id="txtGroupName{{selectedCustomer.CustomerId}}" value="Customer Group Name:">
+            </div>
+            <div class="col-sm-6">
+              <input type="text" readonly class="form-control-plaintext"
+                id="txtGroupName_{{selectedCustomer.CustomerId}}" value="Nellimarla Group">
+            </div>
+          </div>
+          <div cRow class="form-group row">
+            <div class="col-sm-6">
+              <input type="text" readonly class="form-control-plaintext"
+                id="txtCustomer_{{selectedCustomer.CustomerId}}" value="Email">
+            </div>
+            <div class="col-sm-6">
+              <input type="text" readonly class="form-control-plaintext" id="txtCustomer{{selectedCustomer.CustomerId}}"
+                value="email@example.com">
+            </div>
+          </div>
+          <div cRow class="form-group row">
+            <div cFormFloating>
+              <input cFormControl id="txtCustomerId{{selectedCustomer.CustomerId}}" placeholder="Customer Id"
+                type="number" autocomplete="off" [(ngModel)]="selectedCustomer.CustomerId"
+                name="txtCustomerId{{selectedCustomer.CustomerId}}" />
+              <label cLabel for="txtCustomerId{{selectedCustomer.CustomerId}}">Customer Id</label>
+            </div>
+          </div>
+        </form>
+      </c-col>
+    </c-row>
+  </c-modal-body>
+  <c-modal-footer>
+    <button (click)="toggleAddLoanModal()" cButton color="secondary">
+      Close
+    </button>
+    <button cButton color="primary" (click)="handleModalSubmitEvent(action)">{{modalSubmitButtonText}}</button>
+  </c-modal-footer>
+</c-modal>
+
+
+
+
+<c-modal alignment="center" backdrop="static" size="sm" id="addCustomerModal" [visible]="visibleAddEMI"
+  (visibleChange)="handleAddEMIChange($event)">
+  <c-modal-header>
+    <h5 cModalTitle>{{modalTitle}}</h5>
+    <button (click)="toggleAddEMIModal()" cButtonClose></button>
+  </c-modal-header>
+  <c-modal-body>
+    <c-row class="justify-content-center">
+      <c-col xl="8" md="4" sm="4">
+        <form>
+          <div cFormFloating>
+            <input cFormControl id="txtInvestment{{selectedCustomer.CustomerId}}"
+              placeholder="{{modalTextboxPlaceholder}}" type="number" autocomplete="off"
+              [(ngModel)]="modifiedInvestment" name="txtInvestment{{selectedCustomer.CustomerId}}" />
+            <label cLabel for="txtInvestment{{selectedCustomer.CustomerId}}">{{modalTextboxPlaceholder}}</label>
+          </div>
+        </form>
+      </c-col>
+    </c-row>
+  </c-modal-body>
+  <c-modal-footer>
+    <button (click)="toggleAddEMIModal()" cButton color="secondary">
+      Close
+    </button>
+    <button cButton color="primary" (click)="handleModalSubmitEvent(action)">{{modalSubmitButtonText}}</button>
+  </c-modal-footer>
+</c-modal>

@@ -1,0 +1,85 @@
+<c-container>
+  <c-row class="justify-content-center">
+    @for (item of WidgetData; track item.Id) {
+    <c-col xl="3" md="4" sm="4">
+      <c-widget-stat-b #widgetStatB3inv="cWidgetStatB" [title]=item.Title class="mb-4" [color]=item.Color inverse
+        [text]=item.Text [value]=item.Amount>
+        <c-progress [white]="widgetStatB3inv.inverse" class="my-2" thin>
+          <c-progress-bar [value]=item.ProgressPercentage></c-progress-bar>
+        </c-progress>
+      </c-widget-stat-b>
+    </c-col>
+    }
+  </c-row>
+</c-container>
+<c-container>
+  <c-row class="justify-content-center">
+    <c-col xl="3" md="4" sm="4">
+      <c-avatar style="cursor: pointer;" color="success" textColor="white" (click)="openAddInvestment()">
+        <svg [cIcon]="icons.cilPlus" size="xxl" title="List Icon"></svg>
+      </c-avatar>
+
+      <c-avatar style="margin-left: 1rem; cursor: pointer;" color="danger" textColor="white"
+        (click)="openDeductInvestment()">
+        <svg [cIcon]="icons.cilMinus" size="xl" title="List Icon"></svg>
+      </c-avatar>
+    </c-col>
+  </c-row>
+</c-container>
+
+
+
+
+<c-modal alignment="center" backdrop="static" size="sm" id="liveDemoModal" [visible]="visible"
+  (visibleChange)="handleLiveDemoChange($event)">
+  <c-modal-header>
+    <h5 cModalTitle>{{modalTitle}}</h5>
+    <button (click)="toggleLiveDemo()" cButtonClose></button>
+  </c-modal-header>
+  <c-modal-body>
+    <c-row class="justify-content-center">
+      <c-col xl="8" md="4" sm="4">
+        <form>
+          <div cFormFloating>
+            <input cFormControl id="txtInvestment" placeholder="{{modalTextboxPlaceholder}}" type="number"
+              autocomplete="off" [(ngModel)]="modifiedInvestment" name="txtInvestment" />
+            <label cLabel for="txtInvestment">{{modalTextboxPlaceholder}}</label>
+          </div>
+        </form>
+      </c-col>
+    </c-row>
+  </c-modal-body>
+  <c-modal-footer>
+    <button (click)="toggleLiveDemo()" cButton color="secondary">
+      Close
+    </button>
+    <button cButton color="primary" (click)="handleModalSubmitEvent(action)">{{modalSubmitButtonText}}</button>
+  </c-modal-footer>
+</c-modal>
+
+
+<!-- <c-col xl="4" md="6" sm="6">
+    <c-widget-stat-b #widgetStatB3inv="cWidgetStatB" [title]=WidgetTitle class="mb-4" color="primary" inverse
+      [text]=widgetText [value]=amount>
+      <c-progress [white]="widgetStatB3inv.inverse" class="my-2" thin>
+        <c-progress-bar [value]=progressPercentage></c-progress-bar>
+      </c-progress>
+    </c-widget-stat-b>
+  </c-col>
+  
+  <c-col xl="4" md="6" sm="6">
+    <c-widget-stat-b #widgetStatB3inv="cWidgetStatB" [title]="'Widget title'" class="mb-4" color="warning" inverse
+      text="Lorem ipsum dolor sit amet enim." value="$98,111.00">
+      <c-progress [white]="widgetStatB3inv.inverse" class="my-2" thin>
+        <c-progress-bar [value]="89.9"></c-progress-bar>
+      </c-progress>
+    </c-widget-stat-b>
+  </c-col>
+  <c-col xl="4" md="6" sm="6">
+    <c-widget-stat-b #widgetStatB2inv="cWidgetStatB" [title]="'Widget title'" class="mb-4" color="danger" inverse
+      text="Lorem ipsum dolor sit amet enim." value="12.124">
+      <c-progress [white]="widgetStatB2inv.inverse" class="my-2" thin>
+        <c-progress-bar [value]="89.9"></c-progress-bar>
+      </c-progress>
+    </c-widget-stat-b>
+  </c-col> -->

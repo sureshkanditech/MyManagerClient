@@ -1,0 +1,133 @@
+<c-avatar fxShow.sm="true" fxShow.gt-sm="false" fxShow="true" class="avatar bg-primary text-white me-2"
+  style="cursor: pointer; height: 33px; float: right !important;" color="success" textColor="white"
+  (click)="openAddNewModal()">
+  <svg [cIcon]="icons.cilPlus" size="xl" title="List Icon"></svg>
+</c-avatar>
+
+<c-avatar fxHide.sm="true" fxHide.gt-sm="false" fxHide="true" class="avatar bg-primary text-white me-2"
+  style="cursor: pointer; width: 150px; height: 33px; float: right !important;" color="success" textColor="white"
+  (click)="openAddNewModal()">
+  <svg [cIcon]="icons.cilPlus" size="xl" title="List Icon"></svg> {{buttonText}}
+</c-avatar>
+
+
+<c-modal alignment="center" backdrop="static" size="sm" id="addCustomerGroupModal" [visible]="visibleGroup"
+  (visibleChange)="handleCustomerGroupChange($event)">
+  <c-modal-header>
+    <h5 cModalTitle>{{modalTitle}}</h5>
+    <button (click)="toggleCustomerGroupModal()" cButtonClose></button>
+  </c-modal-header>
+  <c-modal-body>
+    <c-row class="justify-content-center">
+      <c-col xl="11" md="4" sm="4">
+        <form>
+          <div cRow class="row mb-3 d-none">
+            <div class="col-sm-12 ">
+              <div cFormFloating>
+                <input cFormControl id="txtGroupId" placeholder="Group Id" type="number" autocomplete="off"
+                  [(ngModel)]="selectedCustomerGroup.CustomerGroupId" name="txtGroupId" />
+                <label cLabel for="txtGroupId">Group ID:</label>
+              </div>
+            </div>
+          </div>
+          <div cRow class="row mb-3">
+            <div class="col-sm-12 ">
+              <div cFormFloating>
+                <input cFormControl id="txtGroupName" placeholder="Group Name" type="text" autocomplete="off"
+                  [(ngModel)]="selectedCustomerGroup.CustomerGroupName" name="txtGroupName" />
+                <label cLabel for="txtGroupName">Group Name</label>
+              </div>
+            </div>
+          </div>
+          <div cRow class="row  mb-3">
+            <div class="col-sm-12">
+              <div cFormFloating>
+                <input cFormControl id="txtGroupLocation" placeholder="Group Location" type="text" autocomplete="off"
+                  [(ngModel)]="selectedCustomerGroup.CustomerGroupLocation" name="txtGroupLocation" />
+                <label cLabel for="txtGroupLocation">Group Location</label>
+              </div>
+            </div>
+          </div>
+        </form>
+      </c-col>
+    </c-row>
+  </c-modal-body>
+  <c-modal-footer>
+    <button (click)="toggleCustomerGroupModal()" cButton color="secondary">
+      Close
+    </button>
+    <button cButton color="primary" (click)="handleAddNewGroupModalSubmitEvent()">{{modalSubmitButtonText}}</button>
+  </c-modal-footer>
+</c-modal>
+
+
+
+
+<c-modal alignment="center" backdrop="static" size="lg" id="addCustomerModal" [visible]="visibleCustomer"
+  (visibleChange)="handleCustomerChange($event)">
+  <c-modal-header>
+    <h5 cModalTitle>{{modalTitle}}</h5>
+    <button (click)="toggleCustomerModal()" cButtonClose></button>
+  </c-modal-header>
+  <c-modal-body>
+    <c-row class="justify-content-center">
+      <c-col xl="8" md="4" sm="4">
+        <form>
+          <div cRow class="row mb-3 d-none">
+            <div class="col-sm-12 ">
+              <div cFormFloating>
+                <input cFormControl id="txtCustomerId" placeholder="Customer Id" type="number" autocomplete="off"
+                  [(ngModel)]="selectedCustomer.CustomerId" name="txtCustomerId" />
+                <label cLabel for="txtGroupId">Customer Id</label>
+              </div>
+            </div>
+          </div>
+          <div cRow class="row mb-3">
+            <div class="col-sm-12 ">
+              <div cFormFloating>
+                <input cFormControl id="txtCustomerName" placeholder="Customer Name" type="text" autocomplete="off"
+                  [(ngModel)]="selectedCustomer.CustomerName" name="txtCustomerName" />
+                <label cLabel for="txtGroupName">Customer Name</label>
+              </div>
+            </div>
+          </div>
+          <div cRow class="row  mb-3">
+            <div class="col-sm-12">
+              <div cFormFloating>
+                <input cFormControl id="txtCustomerPhone" placeholder="Customer Phone" type="text" autocomplete="off"
+                  [(ngModel)]="selectedCustomer.CustomerPhone" name="txtCustomerPhone" />
+                <label cLabel for="txtCustomerPhone">Customer Phone</label>
+              </div>
+            </div>
+          </div>
+          <div cRow class="row  mb-3">
+            <div class="col-sm-12">
+              <div cFormFloating>
+                <input cFormControl id="txtCustomerAddress" placeholder="Customer Address" type="text"
+                  autocomplete="off" [(ngModel)]="selectedCustomer.CustomerAddress" name="txtCustomerAddress" />
+                <label cLabel for="txtCustomerAddress">Customer Address</label>
+              </div>
+            </div>
+          </div>
+          <div cRow class="row  mb-3">
+            <div class="col-sm-12">
+              <div cFormFloating>
+                <input cFormControl id="txtCustomerAadhaarNumber" placeholder="Customer AadhaarNumber" type="text"
+                  autocomplete="off" [(ngModel)]="selectedCustomer.CustomerAadhaarNumber"
+                  name="txtCustomerAadhaarNumber" />
+                <label cLabel for="txtCustomerAadhaarNumber">Customer AadhaarNumber</label>
+              </div>
+            </div>
+          </div>
+
+        </form>
+      </c-col>
+    </c-row>
+  </c-modal-body>
+  <c-modal-footer>
+    <button (click)="toggleCustomerModal()" cButton color="secondary">
+      Close
+    </button>
+    <button cButton color="primary" (click)="handleAddNewCustomerModalSubmitEvent()">{{modalSubmitButtonText}}</button>
+  </c-modal-footer>
+</c-modal>

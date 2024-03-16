@@ -10,6 +10,7 @@ import {
   Output,
 } from '@angular/core';
 import { cilList, cilShieldAlt, cilPlus, cilMinus } from '@coreui/icons';
+import { CustomerGroupDto } from 'src/app/interfaces/customer-group-dto.interface';
 import { CustomerGroup } from 'src/app/interfaces/customer-group.interface';
 import { Customer } from 'src/app/interfaces/customer.interface';
 
@@ -121,13 +122,7 @@ export class ListCustomerGroupWidgetsComponent implements OnInit {
   ];
 
   @Input()
-  selectedCustomerGroup: CustomerGroup = new CustomerGroup(
-    0,
-    '',
-    '',
-    new Customer(0, '', '', '', '', null, null),
-    []
-  );
+  selectedCustomerGroup: CustomerGroupDto = new CustomerGroupDto();
 
   @Input()
   amount: string | undefined;
@@ -149,19 +144,6 @@ export class ListCustomerGroupWidgetsComponent implements OnInit {
   ngOnInit(): void {
     this.amount = this.applyCurrentPipe(String(this.amount));
   }
-
-  // ngAfterContentInit(): void {
-  //   this.amount = this.applyCurrentPipe(String(this.amount));
-  //   // this.WidgetData = this.WidgetData.map((el: any) => {
-  //   //   return {
-  //   //     ...el,
-  //   //     Amount: this.applyCurrentPipe(el.Amount),
-  //   //     Text: '',
-  //   //   };
-  //   // });
-
-  //   // this.changeDetectorRef.detectChanges();
-  // }
 
   onlyContainsNumbers = (str: string) => /^\d+$/.test(str);
 

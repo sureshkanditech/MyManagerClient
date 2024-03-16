@@ -8,6 +8,12 @@ export class CustomerGroup {
   Customers: Customer[];
   CreatedDate: Date | null = null;
   ModifiedDate: Date | null = null;
+  CustomerGroupMemberCount: number = 0;
+  CustomerGroupLoanTotal: number = 0;
+  CustomerGroupLoanPaidAmount: number = 0;
+  CustomerGroupLoanOutstanding: number = 0;
+  CreatedBy: number = 0;
+  ModifiedBy: number = 0;
 
   constructor(
     CustomerGroupId: number,

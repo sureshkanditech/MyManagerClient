@@ -140,8 +140,8 @@
                   <th>Group Name</th>
                   <th class="text-center">Location</th>
                   <th>Balance</th>
-                  <!-- <th class="text-center">Leader</th> -->
-                  <th>Created</th>
+                  <th class="text-center">Member Count</th>
+                  <!-- <th>Created</th> -->
                 </tr>
               </thead>
               <tbody>
@@ -163,128 +163,78 @@
                       </div>
                     </td>
                     <td>
-                      <div>{{ currentCustomerGroup.CustomerGroupName }} {{i}}</div>
+                      <div>{{ currentCustomerGroup.CustomerGroupName }}</div>
                       <div class="small text-medium-emphasis text-nowrap">
-                        <span>
-                          {{ currentCustomerGroup.CreatedDate }} | Registered: {{ currentCustomerGroup.ModifiedDate }}
-                        </span>
+                        <span>Registered: {{ currentCustomerGroup.CreatedDate | date:"MMM dd, yyyy hh:mm a"}}</span>
                       </div>
                     </td>
                     <td class="text-center">
                       <span>{{ currentCustomerGroup.CustomerGroupLocation }}</span>
                     </td>
-                    <td>
+                    <td class="w-25">
                       <div class="d-flex justify-content-between">
                         <div class="float-start">
-                          <strong>{{(i + 5) * 3}}%</strong>
+                          @if(currentCustomerGroup.CustomerGroupLoanTotal){
+                          <strong>{{
+                            ((currentCustomerGroup.CustomerGroupLoanPaidAmount/currentCustomerGroup.CustomerGroupLoanTotal)*100).toFixed(2)
+                            }}%</strong>
+                          }
+                          @else {
+                          <strong>0%</strong>
+                          }
                         </div>
                         <div class="float-end ms-1 text-nowrap">
+                          @if(currentCustomerGroup.CustomerGroupLoanTotal){
                           <small class="text-medium-emphasis">
-                            {{ (i + 5) * 3 }}
+                            {{ currentCustomerGroup.CustomerGroupLoanPaidAmount }} / {{
+                            currentCustomerGroup.CustomerGroupLoanTotal }}
                           </small>
+                          }
+                          @else {
+                          <small class="text-medium-emphasis">
+                            0 / 0
+                          </small>
+                          }
                         </div>
                       </div>
                       <c-progress thin>
-                        <c-progress-bar [value]="(i + 5) *  3" color="primary"></c-progress-bar>
+                        @if(currentCustomerGroup.CustomerGroupLoanTotal){
+                        <c-progress-bar
+                          [value]="((currentCustomerGroup.CustomerGroupLoanPaidAmount/currentCustomerGroup.CustomerGroupLoanTotal)*100).toFixed(2)"
+                          color="primary"></c-progress-bar>
+                        }
+                        @else {
+                        <c-progress-bar [value]=0 color="primary"></c-progress-bar>
+                        }
                       </c-progress>
                     </td>
                     <td>
-                      <div class="small text-medium-emphasis">Last login</div>
-                      <!-- <div class="fw-semibold text-nowrap">{{ user.activity }}</div> -->
+                      <div class="small text-medium-emphasis">{{ currentCustomerGroup.CustomerGroupMemberCount }}</div>
                     </td>
-                  </tr>
+                    <!-- <td>
+                      <div class="small text-medium-emphasis">
+                        <c-avatar style="margin-left: 0.5rem; cursor: pointer; transform: rotate(45deg);" color="danger"
+                          textColor="white" size="l" title="Delte Customer"
+                          (click)="openGroupDeleteModal();">
+                          <svg [cIcon]="icons.cilPlus" size="xl"></svg>
+                        </c-avatar>
 
-                  <tr class="p-0">
-                    <td colspan="6" class="p-0">
-                      <div id="flush-collapse_{{i}}" class="accordion-collapse collapse"
-                        data-coreui-parent="#accordionFlushExample">
-                        <div class="accordion-body pt-1">
-                          <app-list-customer-group-widget></app-list-customer-group-widget>
-                        </div>
+                        <c-modal alignment="center" backdrop="static" size="lg" id="addCustomerGroupModal"
+                          [visible]="visibleGroupDeleteModal" (visibleChange)="handleGroupDeleteModalChange($event)">
+                          <c-modal-header>
+                            <h5 cModalTitle>Do you want to these this group?</h5>
+                            <button (click)="toggleGroupDeleteModal()" cButtonClose></button>
+                          </c-modal-header>
+                          <c-modal-footer>
+                            <button (click)="toggleGroupDeleteModal()" cButton color="secondary">
+                              Cancel
+                            </button>
+                            <button cButton color="primary" (click)="handleGroupDeleteModalSubmit()">Delete
+                              Group</button>
+                          </c-modal-footer>
+                        </c-modal>
                       </div>
-                    </td>
-                  </tr>
-                </ng-container>
-
-
-                <ng-container *ngFor="let user of users; index as i">
-                  <tr (click)="clickAccordion('btn-accordion-'+i)" style="cursor: pointer;">
-                    <td class="text-center p-0">
-                      <div class="container p-0">
-                        <c-avatar size="lg" src="../../../assets/img/icon/group-1.png" status="primary"></c-avatar>
-                      </div>
-
-                      <!-- <div fxShow.sm="true" fxShow.gt-sm="false" fxShow="true" style="min-width: 4rem;">
-                        <div class="container" style="margin: 0; padding: 0;">
-                          <c-avatar class="box" size="md" textColor="white" color="primary" status="{{ user.status }}"
-                            style="margin: 0;">TEST</c-avatar>
-                          <c-avatar class="box overlay" size="md" src="{{ user.avatar }}" status="{{ user.status }}"
-                            style="margin-left: 5px;"></c-avatar>
-                          <c-avatar class="box overlay" size="md" src="{{ user.avatar }}" status="{{ user.status }}"
-                            style="margin-left: 10px;"></c-avatar>
-                          <c-avatar class="box overlay" size="md" src="{{ user.avatar }}" status="{{ user.status }}"
-                            style="margin-left: 15px;"></c-avatar>
-                        </div>
-                      </div>
-                      <div fxHide.sm="true" fxHide.gt-sm="false" fxHide="true">
-                        <div class="container" fxHide.sm="true" fxHide.gt-sm="false" fxHide="true"
-                          style="margin: 0; padding: 0;">
-                          <c-avatar class="box" size="md" textColor="white" color="primary" status="{{ user.status }}"
-                            style="margin: 0;">TEST</c-avatar>
-                          <c-avatar class="box overlay" size="md" src="{{ user.avatar }}" status="{{ user.status }}"
-                            style="margin-left: 30px;"></c-avatar>
-                          <c-avatar class="box overlay" size="md" src="{{ user.avatar }}" status="{{ user.status }}"
-                            style="margin-left: 60px;"></c-avatar>
-                          <c-avatar class="box overlay" size="md" src="{{ user.avatar }}" status="{{ user.status }}"
-                            style="margin-left: 90px;"></c-avatar>
-                        </div>
-                      </div> -->
-
-
-                      <div class="accordion-item d-none">
-
-                        <h2 class="accordion-header">
-                          <button class="accordion-button collapsed" type="button" data-coreui-toggle="collapse"
-                            [attr.data-coreui-target]="'#flush-collapse_'+i" aria-expanded="false"
-                            [attr.aria-controls]="'flush-collapse_'+i" id="btn-accordion-{{i}}">
-                          </button>
-                        </h2>
-                      </div>
-                    </td>
-                    <td>
-                      <div>{{ user.name }} {{i}}</div>
-                      <div class="small text-medium-emphasis text-nowrap">
-                        <span>
-                          {{ user.state }} | Registered: {{ user.registered }}
-                        </span>
-                      </div>
-                    </td>
-                    <td class="text-center">
-                      <svg cIcon id="{{ user.country + user.name }}" name="cif{{ user.country }}" size="xl"
-                        title="{{ user.country }}"></svg>
-                    </td>
-                    <td>
-                      <div class="d-flex justify-content-between">
-                        <div class="float-start">
-                          <strong>{{ user.usage }}%</strong>
-                        </div>
-                        <div class="float-end ms-1 text-nowrap">
-                          <small class="text-medium-emphasis">
-                            {{ user.period }}
-                          </small>
-                        </div>
-                      </div>
-                      <c-progress thin>
-                        <c-progress-bar [value]="user.usage" color="{{ user.color }}"></c-progress-bar>
-                      </c-progress>
-                    </td>
-                    <!-- <td class="text-center">
-                      <svg cIcon name="cibCc{{ user.payment }}" size="xl"></svg>
                     </td> -->
-                    <td>
-                      <div class="small text-medium-emphasis">Last login</div>
-                      <div class="fw-semibold text-nowrap">{{ user.activity }}</div>
-                    </td>
                   </tr>
 
                   <tr class="p-0">
@@ -292,13 +242,12 @@
                       <div id="flush-collapse_{{i}}" class="accordion-collapse collapse"
                         data-coreui-parent="#accordionFlushExample">
                         <div class="accordion-body pt-1">
-                          <app-list-customer-group-widget></app-list-customer-group-widget>
+                          <app-list-customer-group-widget
+                            [selectedCustomerGroup]="currentCustomerGroup"></app-list-customer-group-widget>
                         </div>
                       </div>
                     </td>
                   </tr>
-
-
                 </ng-container>
               </tbody>
             </table>
@@ -323,124 +272,3 @@
     <button cButton color="primary">Understood</button>
   </c-modal-footer>
 </c-modal>
-
-
-<!-- 
-<div class="fade-in">
-  <c-row>
-    <c-col xs>
-      <c-card class="mb-4">
-        <c-card-header>Users</c-card-header>
-        <c-card-body>
-          <table [hover]="true" [responsive]="true" [striped]="true" align="middle" cTable class="mb-0 border">
-            <thead cTableColor="light">
-              <tr>
-                <th class="text-center">
-                  <svg cIcon name="cilPeople"></svg>
-                </th>
-                <th>User</th>
-                <th class="text-center">Country</th>
-                <th>Usage</th>
-                <th class="text-center">Payment Method</th>
-                <th>Activity</th>
-              </tr>
-            </thead>
-            <tbody>
-              <ng-container *ngFor="let user of users; index as i">
-                <tr (click)="expandUser=user">
-                  <td class="text-center">
-                    <c-avatar size="md" src="{{ user.avatar }}" status="{{ user.status }}"></c-avatar>
-                  </td>
-                  <td>
-                    <div>{{ user.name }} {{i}}</div>
-                    <div class="small text-medium-emphasis text-nowrap">
-                      <span>
-                        {{ user.state }} | Registered: {{ user.registered }}
-                      </span>
-                    </div>
-                  </td>
-                  <td class="text-center">
-                    <svg cIcon id="{{ user.country + user.name }}" name="cif{{ user.country }}" size="xl"
-                      title="{{ user.country }}"></svg>
-                  </td>
-                  <td>
-                    <div class="d-flex justify-content-between">
-                      <div class="float-start">
-                        <strong>{{ user.usage }}%</strong>
-                      </div>
-                      <div class="float-end ms-1 text-nowrap">
-                        <small class="text-medium-emphasis">
-                          {{ user.period }}
-                        </small>
-                      </div>
-                    </div>
-                    <c-progress thin>
-                      <c-progress-bar [value]="user.usage" color="{{ user.color }}"></c-progress-bar>
-                    </c-progress>
-                  </td>
-                  <td class="text-center">
-                    <svg cIcon name="cibCc{{ user.payment }}" size="xl"></svg>
-                  </td>
-                  <td>
-                    <div class="small text-medium-emphasis">Last login</div>
-                    <div class="fw-semibold text-nowrap">{{ user.activity }}</div>
-                  </td>
-                </tr>
-
-                <tr [@fadeInOut] *ngIf="expandUser && expandUser.name==user.name">
-                  <td colspan="5">
-                    <div class="ms-5">
-                      <table>
-                        <tr>
-                          <td class="text-center">
-                            <c-avatar size="md" src="{{ user.avatar }}" status="{{ user.status }}"></c-avatar>
-                          </td>
-                          <td>
-                            <div>{{ user.name }} {{i}}</div>
-                            <div class="small text-medium-emphasis text-nowrap">
-                              <span>
-                                {{ user.state }} | Registered: {{ user.registered }}
-                              </span>
-                            </div>
-                          </td>
-                          <td class="text-center">
-                            <svg cIcon id="{{ user.country + user.name }}" name="cif{{ user.country }}" size="xl"
-                              title="{{ user.country }}"></svg>
-                          </td>
-                          <td>
-                            <div class="d-flex justify-content-between">
-                              <div class="float-start">
-                                <strong>{{ user.usage }}%</strong>
-                              </div>
-                              <div class="float-end ms-1 text-nowrap">
-                                <small class="text-medium-emphasis">
-                                  {{ user.period }}
-                                </small>
-                              </div>
-                            </div>
-                            <c-progress thin>
-                              <c-progress-bar [value]="user.usage" color="{{ user.color }}"></c-progress-bar>
-                            </c-progress>
-                          </td>
-                          <td class="text-center">
-                            <svg cIcon name="cibCc{{ user.payment }}" size="xl"></svg>
-                          </td>
-                          <td>
-                            <div class="small text-medium-emphasis">Last login</div>
-                            <div class="fw-semibold text-nowrap">{{ user.activity }}</div>
-                          </td>
-                        </tr>
-                      </table>
-                    </div>
-                  </td>
-                </tr>
-
-
-              </ng-container>
-            </tbody>
-          </table>
-        </c-card-body>
-      </c-card>
-    </c-col>
-  </c-row>
-</div> -->

@@ -1,3 +1,4 @@
+<!-- {{selectedCustomerGroup | json }} -->
 <table [hover]="true" [responsive]="true" [striped]="true" align="middle" cTable class="mb-0 border">
   <thead cTableColor="light">
     <tr>
@@ -12,6 +13,82 @@
     </tr>
   </thead>
   <tbody>
+
+    <ng-container *ngFor="let currentCustomer of selectedCustomerGroup.Customers; index as i">
+      <tr>
+        <td class="text-center">
+          <!-- <c-avatar size="md" src="{{ user.avatar }}" status="{{ user.status }}"></c-avatar> -->
+        </td>
+        <td>
+          <div>{{ currentCustomer.CustomerName }}</div>
+          <div class="small text-medium-emphasis text-nowrap">
+            <span>
+              {{ currentCustomer.LoanDetail.LoanStartDate ? "Start:" + currentCustomer.LoanDetail.LoanStartDate : ""
+              }}{{
+              currentCustomer.LoanDetail.LoanEndDate ? " | End:" + currentCustomer.LoanDetail.LoanEndDate : "" }}
+            </span>
+          </div>
+        </td>
+        <td class="text-center">
+          <div>{{ currentCustomer.CustomerAddress }}</div>
+        </td>
+        <td>
+          <div class="d-flex justify-content-between">
+            <div class="float-start">
+              @if(currentCustomer.LoanDetail.LoanAmountWithInterest){
+              <strong>{{
+                (( (currentCustomer.LoanDetail.LoanCollectedAmount == null ? 0 :
+                currentCustomer.LoanDetail.LoanCollectedAmount)/currentCustomer.LoanDetail.LoanAmountWithInterest)*100).toFixed(2)
+                }}%</strong>
+              }
+              @else {
+              <strong>0%</strong>
+              }
+            </div>
+            <div class="float-end ms-1 text-nowrap">
+              @if(currentCustomer.LoanDetail.LoanAmountWithInterest){
+              <small class="text-medium-emphasis">
+                {{ currentCustomer.LoanDetail.LoanCollectedAmount == null ? 0 :
+                currentCustomer.LoanDetail.LoanCollectedAmount }} /
+                {{currentCustomer.LoanDetail.LoanAmountWithInterest == null ? 0 :
+                currentCustomer.LoanDetail.LoanAmountWithInterest}}
+              </small>
+              }
+              @else {
+              <small class="text-medium-emphasis">
+                0 / 0
+              </small>
+              }
+            </div>
+          </div>
+          <c-progress thin>
+            <!-- <c-progress-bar [value]="currentCustomer.CustomerId" color="primary"></c-progress-bar> -->
+
+            @if(currentCustomer.LoanDetail.LoanAmountWithInterest){
+            <c-progress-bar
+              [value]="(((currentCustomer.LoanDetail.LoanCollectedAmount == null ? 0 : currentCustomer.LoanDetail.LoanCollectedAmount)/currentCustomer.LoanDetail.LoanAmountWithInterest)*100).toFixed(2)"
+              color="primary"></c-progress-bar>
+            }
+            @else {
+            <c-progress-bar [value]=0 color="primary"></c-progress-bar>
+            }
+
+          </c-progress>
+        </td>
+        <td class="text-center">
+          <div>{{ currentCustomer.CustomerAadhaarNumber }}</div>
+        </td>
+        <td class="text-center">
+          <div style=" width: 100%; display: flex;">
+            <app-manage-loan-widget type="AddLoan"></app-manage-loan-widget>
+            <app-manage-loan-widget type="AddEMI"></app-manage-loan-widget>
+            <app-manage-customer-group-customer-map-widget></app-manage-customer-group-customer-map-widget>
+          </div>
+        </td>
+      </tr>
+    </ng-container>
+
+
     <ng-container *ngFor="let user of users; index as i">
       <tr>
         <td class="text-center">

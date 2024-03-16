@@ -15,6 +15,7 @@ import Swal from 'sweetalert2';
 import { CustomerGroupService } from 'src/app/services/customer-group.service';
 import { animate, style, transition, trigger } from '@angular/animations';
 import { cilList, cilShieldAlt, cilPlus, cilMinus } from '@coreui/icons';
+import { CustomerGroupDto } from 'src/app/interfaces/customer-group-dto.interface';
 
 interface IUser {
   name: string;
@@ -47,6 +48,20 @@ interface IUser {
   ],
 })
 export class GroupComponent implements OnInit {
+  visibleGroupDeleteModal: boolean = false;
+  toggleGroupDeleteModal() {
+    this.visibleGroupDeleteModal = !this.visibleGroupDeleteModal;
+  }
+  handleGroupDeleteModalChange(event: boolean) {
+    this.visibleGroupDeleteModal = event;
+  }
+
+  handleGroupDeleteModalSubmit() {
+    throw new Error('Method not implemented.');
+  }
+  openGroupDeleteModal() {
+    this.visibleGroupDeleteModal = true;
+  }
   icons = { cilList, cilShieldAlt, cilPlus, cilMinus };
 
   clickAccordion(btnId: string) {
@@ -54,8 +69,8 @@ export class GroupComponent implements OnInit {
     button.click();
   }
 
-  customerGroupList: CustomerGroup[] = [];
-  filteredCustomerGroups: CustomerGroup[] = [];
+  customerGroupList: CustomerGroupDto[] = [];
+  filteredCustomerGroups: CustomerGroupDto[] = [];
   expandUser: any;
   searchString: string = '';
 
@@ -207,17 +222,17 @@ export class GroupComponent implements OnInit {
     }
 
     this.filteredCustomerGroups = this.customerGroupList.filter(
-      (customerGroup) =>
-        customerGroup?.CustomerGroupId.toString()
+      (CustomerGroupDto) =>
+        CustomerGroupDto?.CustomerGroupId.toString()
           .toLowerCase()
           .includes(text.toLowerCase()) ||
-        customerGroup?.CustomerGroupName.toLowerCase().includes(
+        CustomerGroupDto?.CustomerGroupName.toLowerCase().includes(
           text.toLowerCase()
         ) ||
-        customerGroup?.CustomerGroupLocation.toLowerCase().includes(
+        CustomerGroupDto?.CustomerGroupLocation.toLowerCase().includes(
           text.toLowerCase()
         ) ||
-        customerGroup?.Customers?.filter((cust) =>
+        CustomerGroupDto?.Customers?.filter((cust) =>
           cust.searchCustomer(text.toLowerCase())
         )?.length > 0
     );

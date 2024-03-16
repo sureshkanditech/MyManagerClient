@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable, catchError, map, throwError } from 'rxjs';
 import { CustomerGroup } from '../interfaces/customer-group.interface';
 import { BASE_URL } from '../environment/environment';
+import { CustomerGroupDto } from '../interfaces/customer-group-dto.interface';
 
 @Injectable({
   providedIn: 'root',
@@ -15,7 +16,7 @@ export class CustomerGroupService {
   AddCustomerGroup(
     customerGroup: CustomerGroup,
     createdBy: number
-  ): Observable<CustomerGroup[]> {
+  ): Observable<CustomerGroupDto[]> {
     const url = `${this.baseUrl}/CustomerGroups`;
 
     const httpOptions = {
@@ -49,7 +50,7 @@ export class CustomerGroupService {
       );
   }
 
-  getCustomerGroups(): Observable<CustomerGroup[]> {
+  getCustomerGroups(): Observable<CustomerGroupDto[]> {
     const url = `${this.baseUrl}/CustomerGroups`;
     const httpOptions = {
       headers: new HttpHeaders({ 'Content-Type': 'application/json' }),

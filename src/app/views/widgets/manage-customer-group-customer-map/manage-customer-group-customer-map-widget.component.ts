@@ -12,6 +12,8 @@ import {
 import { cilList, cilShieldAlt, cilPlus, cilMinus } from '@coreui/icons';
 import { CustomerGroup } from '../../../interfaces/customer-group.interface';
 import { Customer } from '../../../interfaces/customer.interface';
+import { CustomerGroupDto } from 'src/app/interfaces/customer-group-dto.interface';
+import { CustomerDto } from 'src/app/interfaces/customer-dto.interface';
 
 interface IUser {
   name: string;
@@ -55,16 +57,10 @@ export class ManageCustomerGroupCustomerMapWidgetsComponent implements OnInit {
   progressPercentage: string | undefined;
 
   @Input()
-  selectedCustomerGroup: CustomerGroup = new CustomerGroup(
-    0,
-    '',
-    '',
-    new Customer(0, '', '', '', '', null, null),
-    []
-  );
+  selectedCustomerGroup: CustomerGroupDto = new CustomerGroupDto();
 
   @Input()
-  selectedCustomer: Customer = new Customer(0, '', '', '', '', null, null);
+  selectedCustomer: CustomerDto = new CustomerDto();
 
   constructor(
     private changeDetectorRef: ChangeDetectorRef,

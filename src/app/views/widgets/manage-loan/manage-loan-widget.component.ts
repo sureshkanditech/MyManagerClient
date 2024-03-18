@@ -12,6 +12,10 @@ import {
 import { cilList, cilShieldAlt, cilPlus, cilMinus } from '@coreui/icons';
 import { CustomerGroup } from '../../../interfaces/customer-group.interface';
 import { Customer } from '../../../interfaces/customer.interface';
+import { LoanDetail } from '../../../interfaces/loan-detail.interface';
+import * as moment from 'moment';
+import { CustomerGroupDto } from 'src/app/interfaces/customer-group-dto.interface';
+import { CustomerDto } from 'src/app/interfaces/customer-dto.interface';
 
 interface IUser {
   name: string;
@@ -34,6 +38,50 @@ interface IUser {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ManageLoanWidgetsComponent implements OnInit {
+  parseDate(dateString: any): Date {
+    if (dateString) {
+      return new Date(dateString);
+    }
+    return new Date();
+  }
+  addDays(date: Date, days: any) {
+    debugger;
+    let currentDate = moment();
+
+    let result = new Date(date);
+    result.setDate(result.getDate() + days);
+    return result;
+  }
+
+  txtEMIPerInstallment: any;
+
+  addWorkingDays(date: moment.Moment, days: number) {
+    let newDate = date.clone();
+    for (let i = 0; i < days; i++) {
+      if (newDate.isoWeekday() !== 7) {
+        newDate = newDate.add(1, 'days');
+      } else {
+        newDate = newDate.add(1, 'days');
+        i--;
+      }
+    }
+    return newDate.toDate();
+  }
+
+  calculateEndDate(event: any) {
+    this.loanDetail.LoanStartDate = moment(event.target.value).toDate();
+    this.loanDetail.LoanEndDate = this.addWorkingDays(
+      moment(this.loanDetail.LoanStartDate),
+      100
+    );
+  }
+  calculateInterest() {
+    this.loanDetail.LoanAmountWithInterest =
+      this.loanDetail.LoanAmount + this.loanDetail.LoanAmount / 10;
+    this.txtEMIPerInstallment = (
+      this.loanDetail.LoanAmountWithInterest / 100
+    ).toFixed(0);
+  }
   icons = { cilList, cilShieldAlt, cilPlus, cilMinus };
   expandUser: any;
 
@@ -55,16 +103,10 @@ export class ManageLoanWidgetsComponent implements OnInit {
   progressPercentage: string | undefined;
 
   @Input()
-  selectedCustomerGroup: CustomerGroup = new CustomerGroup(
-    0,
-    '',
-    '',
-    new Customer(0, '', '', '', '', null, null),
-    []
-  );
+  selectedCustomerGroup: CustomerGroupDto = new CustomerGroupDto();
 
   @Input()
-  selectedCustomer: Customer = new Customer(0, '', '', '', '', null, null);
+  selectedCustomer: CustomerDto = new CustomerDto();
 
   constructor(
     private changeDetectorRef: ChangeDetectorRef,
@@ -75,19 +117,6 @@ export class ManageLoanWidgetsComponent implements OnInit {
     this.buttonText = 'Add ' + this.type;
     this.amount = this.applyCurrentPipe(String(this.amount));
   }
-
-  // ngAfterContentInit(): void {
-  //   this.amount = this.applyCurrentPipe(String(this.amount));
-  //   // this.WidgetData = this.WidgetData.map((el: any) => {
-  //   //   return {
-  //   //     ...el,
-  //   //     Amount: this.applyCurrentPipe(el.Amount),
-  //   //     Text: '',
-  //   //   };
-  //   // });
-
-  //   // this.changeDetectorRef.detectChanges();
-  // }
 
   onlyContainsNumbers = (str: string) => /^\d+$/.test(str);
 
@@ -114,8 +143,11 @@ export class ManageLoanWidgetsComponent implements OnInit {
   public action = '';
   public modifiedInvestment = 0;
 
+  public loanDetail: LoanDetail = new LoanDetail();
+
   toggleAddLoanModal() {
     this.visibleAddLoan = !this.visibleAddLoan;
+    this.loanDetail = new LoanDetail();
   }
 
   toggleAddEMIModal() {
@@ -157,17 +189,22 @@ export class ManageLoanWidgetsComponent implements OnInit {
   }
 
   handleModalSubmitEvent(action: any) {
-    console.log(action);
-    if (action == 'add') {
-      this.addInvestment.emit({ addedInvestment: this.modifiedInvestment });
-    } else {
-      this.deductInvestment.emit({
+    if (this.type == 'AddLoan') {
+      this.loanDetail.LoanGrantedCustomer = this.selectedCustomer.CustomerId;
+      this.loanDetail.LoanGrantedCustomerGroup =
+        this.selectedCustomerGroup.CustomerGroupId;
+      this.loanDetail.LoanTotalInstallments = 100;
+
+      this.addLoan.emit({ loanDetail: this.loanDetail });
+      this.visibleAddLoan = false;
+    } else if (this.type == 'AddEMI') {
+      this.deductEmit.emit({
         deductedInvestment: this.modifiedInvestment,
       });
+      this.visibleAddEMI = false;
     }
-    this.visibleAddEMI = false;
   }
 
-  @Output() addInvestment = new EventEmitter<any>();
-  @Output() deductInvestment = new EventEmitter<any>();
+  @Output() addLoan = new EventEmitter<any>();
+  @Output() deductEmit = new EventEmitter<any>();
 }

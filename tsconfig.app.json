@@ -7,11 +7,14 @@
       "@angular/localize"
     ],
     "paths": {
-      "@docs-components/*": ["./src/components/*"]
+      "@docs-components/*": [
+        "./src/components/*"
+      ]
     }
   },
   "files": [
-    "src/main.ts"
+    "src/main.ts",
+    "src/app/interfaces/customer-dto.interface.ts"
   ],
   "include": [
     "src/**/*.d.ts"

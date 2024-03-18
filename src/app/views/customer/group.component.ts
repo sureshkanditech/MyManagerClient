@@ -1,4 +1,6 @@
 import {
+  AfterContentChecked,
+  ChangeDetectorRef,
   Component,
   HostBinding,
   Inject,
@@ -16,6 +18,9 @@ import { CustomerGroupService } from 'src/app/services/customer-group.service';
 import { animate, style, transition, trigger } from '@angular/animations';
 import { cilList, cilShieldAlt, cilPlus, cilMinus } from '@coreui/icons';
 import { CustomerGroupDto } from 'src/app/interfaces/customer-group-dto.interface';
+import { FullDetailsDto } from 'src/app/interfaces/full-details-dto.interface';
+import { DataService } from 'src/app/services/data.service';
+import { CustomerDto } from 'src/app/interfaces/customer-dto.interface';
 
 interface IUser {
   name: string;
@@ -47,7 +52,7 @@ interface IUser {
     ]),
   ],
 })
-export class GroupComponent implements OnInit {
+export class GroupComponent implements OnInit, AfterContentChecked {
   visibleGroupDeleteModal: boolean = false;
   toggleGroupDeleteModal() {
     this.visibleGroupDeleteModal = !this.visibleGroupDeleteModal;
@@ -79,9 +84,11 @@ export class GroupComponent implements OnInit {
 
   constructor(
     @Inject(DOCUMENT) private document: Document,
+    private cdref: ChangeDetectorRef,
     private renderer: Renderer2,
     private sanitizer: DomSanitizer,
-    private customerGroupService: CustomerGroupService
+    private customerGroupService: CustomerGroupService,
+    private dataService: DataService
   ) {}
 
   public users: IUser[] = [
@@ -191,7 +198,90 @@ export class GroupComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.GetCustomerGroups();
+    // this.GetCustomerGroups();
+    this.GetFullDetailsDtos();
+  }
+
+  fullDetailDtos!: FullDetailsDto;
+
+  GetFullDetailsDtos() {
+    Swal.fire({
+      title: 'Please wait...',
+      allowOutsideClick: false,
+      icon: 'info',
+    });
+    Swal.showLoading();
+
+    return this.customerGroupService.getFullDetailsDtos().subscribe({
+      next: (data) => {
+        this.fullDetailDtos = data;
+        this.fullDetailDtos.CustomerGroups.forEach((e) => {
+          e.Customers = this.getCurrentCustomerGroupCustomers(e);
+        });
+        this.fullDetailDtos.CustomerGroups.forEach((e) => {
+          e.CustomerGroupLoanTotal = this.getCurrentCustomerGroupLoanAmount(e);
+          e.CustomerGroupLoanPaidAmount =
+            this.getCurrentCustomerGroupLoanCollectedAmount(e);
+        });
+        this.filteredCustomerGroups = this.fullDetailDtos.CustomerGroups;
+        this.dataService.addData('FullDetailDtos', this.fullDetailDtos);
+
+        Swal.close();
+      },
+      error: (message) => {
+        Swal.fire('Error', message, 'error');
+      },
+    });
+  }
+
+  getCurrentCustomerGroupCustomers(currentCustomerGroup: any): CustomerDto[] {
+    return this.fullDetailDtos.CustomerGroupToCustomerMapDTOs.filter(
+      (x) => x.ParentCustomerGroupId == currentCustomerGroup.CustomerGroupId
+    ).map((y) => y.Customer);
+  }
+
+  getCurrentCustomerGroupLoanAmount(currentCustomerGroup: any) {
+    return this.fullDetailDtos.LoanDetailToCustomerMapDTOs.filter((x) =>
+      (currentCustomerGroup.Customers
+        ? currentCustomerGroup.Customers.map((c) => c.CustomerId)
+        : []
+      ).includes(x.ParentCustomerId)
+    )
+      .map((y) => y.LoanDetail)
+      .reduce(
+        (sum, current) =>
+          sum +
+          (current.LoanAmountWithInterest == null
+            ? 0
+            : current.LoanAmountWithInterest),
+        0
+      );
+  }
+
+  anotherCount: number = 0;
+
+  getCurrentCustomerGroupLoanCollectedAmount(currentCustomerGroup: any) {
+    this.anotherCount++;
+    console.log(this.anotherCount);
+    return this.fullDetailDtos.LoanDetailToCustomerMapDTOs.filter((x) =>
+      (currentCustomerGroup.Customers
+        ? currentCustomerGroup.Customers.map((c: any) => c.CustomerId)
+        : []
+      ).includes(x.ParentCustomerId)
+    )
+      .map((y) => y.LoanDetail)
+      .reduce(
+        (sum, current) =>
+          sum +
+          (current.LoanCollectedAmount == null
+            ? 0
+            : current.LoanCollectedAmount),
+        0
+      );
+  }
+
+  ngAfterContentChecked() {
+    this.cdref.detectChanges();
   }
 
   GetCustomerGroups() {
@@ -238,20 +328,7 @@ export class GroupComponent implements OnInit {
     );
   }
 
-  getAccordionBodyText(value: string) {
-    const textSample = `
-      <strong>This is the <mark>#${value}</mark> item accordion body.</strong> It is hidden by
-      default, until the collapse plugin adds the appropriate classes that we use to
-      style each element. These classes control the overall appearance, as well as
-      the showing and hiding via CSS transitions. You can modify any of this with
-      custom CSS or overriding our default variables. It&#39;s also worth noting
-      that just about any HTML can go within the <code>.accordion-body</code>,
-      though the transition does limit overflow.
-    `;
-    return this.sanitizer.bypassSecurityTrustHtml(textSample);
-  }
-
-  addNewCustomerGroup(addGroup: CustomerGroup) {
+  addNewCustomerGroup(addGroup: CustomerGroupDto) {
     console.log(addGroup);
     this.customerGroupService.AddCustomerGroup(addGroup, 2).subscribe({
       next: (data) => {

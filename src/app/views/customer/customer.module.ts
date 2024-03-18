@@ -32,6 +32,8 @@ import { CustomerGroupService } from '../../services/customer-group.service';
 import { LoanDetailsComponent } from './loan-details.component';
 import { FlexLayoutModule, FlexModule } from '@angular/flex-layout';
 import { FormsModule } from '@angular/forms';
+import { DataService } from '../../services/data.service';
+import { LoanDetailService } from 'src/app/services/loan-detail.service';
 
 @NgModule({
   imports: [
@@ -65,6 +67,12 @@ import { FormsModule } from '@angular/forms';
     InvestmentComponent,
     LoanDetailsComponent,
   ],
-  providers: [CustomerService, CustomerGroupService, provideHttpClient()],
+  providers: [
+    CustomerService,
+    CustomerGroupService,
+    provideHttpClient(),
+    DataService,
+    LoanDetailService,
+  ],
 })
 export class CustomerModule {}

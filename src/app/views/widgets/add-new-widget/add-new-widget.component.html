@@ -72,6 +72,25 @@
   <c-modal-body>
     <c-row class="justify-content-center">
       <c-col xl="8" md="4" sm="4">
+        @if (!isAadhaarVerified) {
+        <form>
+          <div cRow class="row mb-3">
+            <div class="col-sm-12 ">
+              <div cFormFloating>
+                <input cFormControl id="txtAadhaarVerification" placeholder="Enter AADHAAR Number" type="number"
+                  autocomplete="off" (change)="AddhaarVerificationChanged($event)" [(ngModel)]="AadhaarForVerification"
+                  name="txtAadhaarVerification" />
+
+                <div class="invalid-feedback" style="display: block;" *ngIf="isAadhaarInUse">
+                  This AADHAAR already existing in another Group <b>{{existingGroupName}}</b>! Please check.
+                </div>
+                <label cLabel for="txtAadhaarVerification">Enter AADHAAR Number</label>
+              </div>
+            </div>
+          </div>
+        </form>
+        }
+        @else{
         <form>
           <div cRow class="row mb-3 d-none">
             <div class="col-sm-12 ">
@@ -113,7 +132,7 @@
             <div class="col-sm-12">
               <div cFormFloating>
                 <input cFormControl id="txtCustomerAadhaarNumber" placeholder="Customer AadhaarNumber" type="text"
-                  autocomplete="off" [(ngModel)]="selectedCustomer.CustomerAadhaarNumber"
+                  autocomplete="off" readonly [(ngModel)]="selectedCustomer.CustomerAadhaarNumber"
                   name="txtCustomerAadhaarNumber" />
                 <label cLabel for="txtCustomerAadhaarNumber">Customer AadhaarNumber</label>
               </div>
@@ -121,6 +140,7 @@
           </div>
 
         </form>
+        }
       </c-col>
     </c-row>
   </c-modal-body>
@@ -128,6 +148,6 @@
     <button (click)="toggleCustomerModal()" cButton color="secondary">
       Close
     </button>
-    <button cButton color="primary" (click)="handleAddNewCustomerModalSubmitEvent()">{{modalSubmitButtonText}}</button>
+    <button cButton color="primary" (click)="clickEvent()">{{modalSubmitButtonText}}</button>
   </c-modal-footer>
 </c-modal>

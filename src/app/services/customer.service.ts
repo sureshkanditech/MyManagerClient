@@ -1,27 +1,60 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, catchError, map, throwError } from 'rxjs';
 import { CustomerGroup } from '../interfaces/customer-group.interface';
+import { Customer } from '../interfaces/customer.interface';
+import { CustomerGroupDto } from '../interfaces/customer-group-dto.interface';
+import { CustomerDto } from '../interfaces/customer-dto.interface';
+import { BASE_URL } from '../environment/environment';
+import { FullDetailsCustomerGroupToCustomerMapDTO } from '../interfaces/full-details-dto.interface';
 
 @Injectable({
   providedIn: 'root',
 })
 export class CustomerService {
-  public baseUrl: String = 'BASE_URL';
+  public baseUrl: String = BASE_URL;
 
   constructor(private http: HttpClient) {}
 
-  AddCustomerGroup(customerGroup: CustomerGroup): Observable<boolean> {
+  AddCustomer(
+    CustomerGroupToCustomerMapDTO: FullDetailsCustomerGroupToCustomerMapDTO
+  ): Observable<CustomerDto[]> {
+    const url = `${this.baseUrl}/Customers/CreateCustomer`;
+
+    const httpOptions = {
+      headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
+    };
+
+    return this.http
+      .post<CustomerDto[]>(url, CustomerGroupToCustomerMapDTO, httpOptions)
+      .pipe(
+        map((response: any) => {
+          console.log(response);
+          return response;
+        }),
+        catchError((err: { error: { message: any } }) => {
+          // Handle different types of errors appropriately
+          console.error(err);
+          if (err.error && err.error.message) {
+            return throwError(() => err.error.message);
+          } else {
+            return throwError(() => 'An unknown error occurred during login.');
+          }
+        })
+      );
+  }
+
+  getCustomers(): Observable<CustomerGroup[]> {
     const url = `${this.baseUrl}/CustomerGroups`;
 
     const httpOptions = {
       headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
     };
 
-    return this.http.post<CustomerGroup>(url, customerGroup, httpOptions).pipe(
+    return this.http.get<CustomerGroup[]>(url, httpOptions).pipe(
       map((response: any) => {
         console.log(response);
-        return true;
+        return response;
       }),
       catchError((err: { error: { message: any } }) => {
         // Handle different types of errors appropriately
@@ -35,14 +68,15 @@ export class CustomerService {
     );
   }
 
-  getCustomerGroups(): Observable<CustomerGroup[]> {
-    const url = `${this.baseUrl}/CustomerGroups`;
+  getCustomersByAadhaar(aadhaar: string): Observable<CustomerDto> {
+    const url = `${this.baseUrl}/Customers/SearchCustomerByAadhaar`;
 
     const httpOptions = {
       headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
+      params: new HttpParams().append('aadhaar', aadhaar),
     };
 
-    return this.http.get<CustomerGroup[]>(url, httpOptions).pipe(
+    return this.http.get<CustomerDto>(url, httpOptions).pipe(
       map((response: any) => {
         console.log(response);
         return response;

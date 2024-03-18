@@ -17,32 +17,47 @@
     <c-row class="justify-content-center">
       <c-col xl="11" md="4" sm="4">
         <form>
-          <div cRow class="form-group row">
-            <div class="col-sm-6">
-              <input type="text" readonly class="form-control-plaintext"
-                id="txtGroupName{{selectedCustomer.CustomerId}}" value="Customer Group Name:">
+          <div cRow class="row mb-3">
+            <div class="col-sm-12">
+              <div cFormFloating>
+                <input cFormControl id="txtLoanAmount" placeholder="Enter Loan Amount" type="number" autocomplete="off"
+                  [(ngModel)]="loanDetail.LoanAmount" name="txtLoanAmount" (input)="calculateInterest()" />
+                <label cLabel for="txtLoanAmount">Enter Loan Amount</label>
+              </div>
             </div>
-            <div class="col-sm-6">
-              <input type="text" readonly class="form-control-plaintext"
-                id="txtGroupName_{{selectedCustomer.CustomerId}}" value="Nellimarla Group">
+            <div class="col-sm-12">
+              <div cFormFloating>
+                <input cFormControl id="txtLoanWithInterest" placeholder="Enter Loan with interest" type="number"
+                  autocomplete="off" [(ngModel)]="loanDetail.LoanAmountWithInterest" name="txtLoanWithInterest"
+                  readonly />
+                <label cLabel for="txtLoanWithInterest">Enter Loan with interest</label>
+              </div>
+            </div>
+            <div class="col-sm-12">
+              <div cFormFloating>
+                <input cFormControl id="txtEMIPerInstallment" placeholder="Installment Amount" type="number"
+                  autocomplete="off" [(ngModel)]="txtEMIPerInstallment" name="txtEMIPerInstallment"
+                  (input)="calculateInterest()" readonly />
+                <label cLabel for="txtEMIPerInstallment">Installment Amount</label>
+              </div>
             </div>
           </div>
-          <div cRow class="form-group row">
-            <div class="col-sm-6">
-              <input type="text" readonly class="form-control-plaintext"
-                id="txtCustomer_{{selectedCustomer.CustomerId}}" value="Email">
+          <div cRow class="row mb-3">
+            <div class="col-sm-12">
+              <div cFormFloating>
+                <input cFormControl id="txtLoanStartDate" placeholder="Loan Start Date" type="date" autocomplete="off"
+                  [value]="loanDetail.LoanStartDate | date:'yyyy-MM-dd'" name="txtLoanStartDate"
+                  (input)="calculateEndDate($event)" />
+                <label cLabel for="txtLoanStartDate">Loan Start Date</label>
+              </div>
             </div>
-            <div class="col-sm-6">
-              <input type="text" readonly class="form-control-plaintext" id="txtCustomer{{selectedCustomer.CustomerId}}"
-                value="email@example.com">
-            </div>
-          </div>
-          <div cRow class="form-group row">
-            <div cFormFloating>
-              <input cFormControl id="txtCustomerId{{selectedCustomer.CustomerId}}" placeholder="Customer Id"
-                type="number" autocomplete="off" [(ngModel)]="selectedCustomer.CustomerId"
-                name="txtCustomerId{{selectedCustomer.CustomerId}}" />
-              <label cLabel for="txtCustomerId{{selectedCustomer.CustomerId}}">Customer Id</label>
+            <div class="col-sm-12">
+              <div cFormFloating>
+                <input cFormControl id="txtLoanEndDate" placeholder="Loan End Date" type="date" autocomplete="off"
+                  [value]="loanDetail.LoanEndDate | date:'yyyy-MM-dd'"
+                  (input)="loanDetail.LoanEndDate=parseDate($event)" name="txtLoanEndDate" readonly />
+                <label cLabel for="txtLoanEndDate">Loan End Date</label>
+              </div>
             </div>
           </div>
         </form>

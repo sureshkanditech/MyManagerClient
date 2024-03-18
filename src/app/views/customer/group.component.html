@@ -168,7 +168,7 @@
                         <span>Registered: {{ currentCustomerGroup.CreatedDate | date:"MMM dd, yyyy hh:mm a"}}</span>
                       </div>
                     </td>
-                    <td class="text-center">
+                    <td class="text-start">
                       <span>{{ currentCustomerGroup.CustomerGroupLocation }}</span>
                     </td>
                     <td class="w-25">
@@ -176,7 +176,7 @@
                         <div class="float-start">
                           @if(currentCustomerGroup.CustomerGroupLoanTotal){
                           <strong>{{
-                            ((currentCustomerGroup.CustomerGroupLoanPaidAmount/currentCustomerGroup.CustomerGroupLoanTotal)*100).toFixed(2)
+                            ((currentCustomerGroup.CustomerGroupLoanPaidAmount/currentCustomerGroup.CustomerGroupLoanTotal)*100).toFixed(0)
                             }}%</strong>
                           }
                           @else {
@@ -209,7 +209,8 @@
                       </c-progress>
                     </td>
                     <td>
-                      <div class="small text-medium-emphasis">{{ currentCustomerGroup.CustomerGroupMemberCount }}</div>
+                      <div class="small text-medium-emphasis text-center">{{ currentCustomerGroup.Customers.length }}
+                      </div>
                     </td>
                     <!-- <td>
                       <div class="small text-medium-emphasis">

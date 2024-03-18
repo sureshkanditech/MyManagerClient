@@ -1,5 +1,5 @@
 <!-- {{selectedCustomerGroup | json }} -->
-<table [hover]="true" [responsive]="true" [striped]="true" align="middle" cTable class="mb-0 border">
+<table [hover]="true" [responsive]="true" align="middle" cTable class="mb-0 border">
   <thead cTableColor="light">
     <tr>
       <th class="text-center">
@@ -17,28 +17,31 @@
     <ng-container *ngFor="let currentCustomer of selectedCustomerGroup.Customers; index as i">
       <tr>
         <td class="text-center">
-          <!-- <c-avatar size="md" src="{{ user.avatar }}" status="{{ user.status }}"></c-avatar> -->
+          <c-avatar size="md" src="./assets/img/avatars/{{(i + 1) % 6}}.jpg" status="primary"></c-avatar>
         </td>
         <td>
           <div>{{ currentCustomer.CustomerName }}</div>
           <div class="small text-medium-emphasis text-nowrap">
             <span>
-              {{ currentCustomer.LoanDetail.LoanStartDate ? "Start:" + currentCustomer.LoanDetail.LoanStartDate : ""
-              }}{{
-              currentCustomer.LoanDetail.LoanEndDate ? " | End:" + currentCustomer.LoanDetail.LoanEndDate : "" }}
+              @if (currentCustomer.CustomerLoanStartDate?.toString() != 'Invalid Date'){
+              Start: {{currentCustomer.CustomerLoanStartDate| date:"MMM dd, yyyy"}}
+              }
+              @if (currentCustomer.CustomerLoanEndDate?.toString() != 'Invalid Date'){
+              | End: {{currentCustomer.CustomerLoanEndDate| date:"MMM dd, yyyy"}}
+              }
             </span>
           </div>
         </td>
-        <td class="text-center">
+        <td class="text-start">
           <div>{{ currentCustomer.CustomerAddress }}</div>
         </td>
         <td>
           <div class="d-flex justify-content-between">
             <div class="float-start">
-              @if(currentCustomer.LoanDetail.LoanAmountWithInterest){
+              @if(currentCustomer.CustomerLoanTotal){
               <strong>{{
-                (( (currentCustomer.LoanDetail.LoanCollectedAmount == null ? 0 :
-                currentCustomer.LoanDetail.LoanCollectedAmount)/currentCustomer.LoanDetail.LoanAmountWithInterest)*100).toFixed(2)
+                ((
+                currentCustomer.CustomerLoanCollectedAmout/currentCustomer.CustomerLoanTotal)*100).toFixed(0)
                 }}%</strong>
               }
               @else {
@@ -46,12 +49,10 @@
               }
             </div>
             <div class="float-end ms-1 text-nowrap">
-              @if(currentCustomer.LoanDetail.LoanAmountWithInterest){
+              @if(currentCustomer.CustomerLoanTotal){
               <small class="text-medium-emphasis">
-                {{ currentCustomer.LoanDetail.LoanCollectedAmount == null ? 0 :
-                currentCustomer.LoanDetail.LoanCollectedAmount }} /
-                {{currentCustomer.LoanDetail.LoanAmountWithInterest == null ? 0 :
-                currentCustomer.LoanDetail.LoanAmountWithInterest}}
+                {{ currentCustomer.CustomerLoanCollectedAmout }} /
+                {{ currentCustomer.CustomerLoanTotal }}
               </small>
               }
               @else {
@@ -64,9 +65,9 @@
           <c-progress thin>
             <!-- <c-progress-bar [value]="currentCustomer.CustomerId" color="primary"></c-progress-bar> -->
 
-            @if(currentCustomer.LoanDetail.LoanAmountWithInterest){
+            @if(currentCustomer.CustomerLoanTotal){
             <c-progress-bar
-              [value]="(((currentCustomer.LoanDetail.LoanCollectedAmount == null ? 0 : currentCustomer.LoanDetail.LoanCollectedAmount)/currentCustomer.LoanDetail.LoanAmountWithInterest)*100).toFixed(2)"
+              [value]="((currentCustomer.CustomerLoanCollectedAmout/currentCustomer.CustomerLoanTotal)*100).toFixed(2)"
               color="primary"></c-progress-bar>
             }
             @else {
@@ -80,15 +81,18 @@
         </td>
         <td class="text-center">
           <div style=" width: 100%; display: flex;">
-            <app-manage-loan-widget type="AddLoan"></app-manage-loan-widget>
-            <app-manage-loan-widget type="AddEMI"></app-manage-loan-widget>
-            <app-manage-customer-group-customer-map-widget></app-manage-customer-group-customer-map-widget>
+            <app-manage-loan-widget type="AddLoan" (addLoan)="addLoan($event)" [selectedCustomer]="currentCustomer"
+              [selectedCustomerGroup]="selectedCustomerGroup"></app-manage-loan-widget>
+            <app-manage-loan-widget type="AddEMI" (deductEmit)="addEMI($event)" [selectedCustomer]="currentCustomer"
+              [selectedCustomerGroup]="selectedCustomerGroup"></app-manage-loan-widget>
+            <app-manage-customer-group-customer-map-widget [selectedCustomer]="currentCustomer"
+              [selectedCustomerGroup]="selectedCustomerGroup"></app-manage-customer-group-customer-map-widget>
           </div>
         </td>
       </tr>
     </ng-container>
 
-
+    <!-- 
     <ng-container *ngFor="let user of users; index as i">
       <tr>
         <td class="text-center">
@@ -131,14 +135,15 @@
           </div>
         </td>
       </tr>
-    </ng-container>
+    </ng-container> -->
   </tbody>
 </table>
 
 <c-container>
   <c-row class="justify-content-center">
     <c-col xl="3" md="4" sm="4" style="margin-bottom: 10px; margin-top: 10px;">
-      <app-add-new-widget type="Customer"></app-add-new-widget>
+      <app-add-new-widget type="Customer" [selectedCustomerGroup]="selectedCustomerGroup"
+        (addCustomer)="addCustomer($event)"></app-add-new-widget>
     </c-col>
   </c-row>
 </c-container>

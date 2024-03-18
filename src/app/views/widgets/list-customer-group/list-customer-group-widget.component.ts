@@ -11,8 +11,20 @@ import {
 } from '@angular/core';
 import { cilList, cilShieldAlt, cilPlus, cilMinus } from '@coreui/icons';
 import { CustomerGroupDto } from 'src/app/interfaces/customer-group-dto.interface';
+import { CustomerDto } from 'src/app/interfaces/customer-dto.interface';
 import { CustomerGroup } from 'src/app/interfaces/customer-group.interface';
 import { Customer } from 'src/app/interfaces/customer.interface';
+import {
+  FullDetailsCustomerDto,
+  FullDetailsCustomerGroupToCustomerMapDTO,
+  FullDetailsDto,
+} from 'src/app/interfaces/full-details-dto.interface';
+import { LoanDetail } from 'src/app/interfaces/loan-detail.interface';
+import { CustomerService } from 'src/app/services/customer.service';
+import { DataService } from 'src/app/services/data.service';
+import Swal from 'sweetalert2';
+import { LoanDetailService } from '../../../services/loan-detail.service';
+import * as moment from 'moment';
 
 interface IUser {
   name: string;
@@ -35,6 +47,50 @@ interface IUser {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ListCustomerGroupWidgetsComponent implements OnInit {
+  createdBy: number = 0;
+
+  addEMI(event: any) {
+    console.log(event);
+    debugger;
+  }
+  addLoan(event: any) {
+    console.log(event);
+    this.createNewLoanDetail(event.loanDetail, this.createdBy);
+  }
+
+  createNewLoanDetail(loanDetail: LoanDetail, createdBy: number) {
+    this.loanDetailService
+      .createNewLoanDetail(loanDetail, createdBy)
+      .subscribe({
+        next: (data) => {
+          Swal.close();
+        },
+        error: (message) => {
+          Swal.fire('Error', message, 'error');
+        },
+      });
+  }
+
+  addCustomer(addedCustomer: CustomerDto) {
+    console.log(addedCustomer);
+
+    let CustomerGroupToCustomerMapDTO: FullDetailsCustomerGroupToCustomerMapDTO =
+      new FullDetailsCustomerGroupToCustomerMapDTO();
+    CustomerGroupToCustomerMapDTO.Customer = addedCustomer;
+    CustomerGroupToCustomerMapDTO.ParentCustomerGroupId =
+      this.selectedCustomerGroup.CustomerGroupId;
+
+    this.customerService.AddCustomer(CustomerGroupToCustomerMapDTO).subscribe({
+      next: (data) => {
+        this.selectedCustomerGroup.Customers.push(addedCustomer);
+        Swal.close();
+      },
+      error: (message) => {
+        Swal.fire('Error', message, 'error');
+      },
+    });
+  }
+
   icons = { cilList, cilShieldAlt, cilPlus, cilMinus };
   expandUser: any;
 
@@ -136,13 +192,105 @@ export class ListCustomerGroupWidgetsComponent implements OnInit {
   @Input()
   progressPercentage: string | undefined;
 
+  public FullDetailDtos: FullDetailsDto = new FullDetailsDto();
+
   constructor(
     private changeDetectorRef: ChangeDetectorRef,
-    private currencyPipe: CurrencyPipe
+    private currencyPipe: CurrencyPipe,
+    private customerService: CustomerService,
+    private dataService: DataService,
+    private loanDetailService: LoanDetailService
   ) {}
 
   ngOnInit(): void {
     this.amount = this.applyCurrentPipe(String(this.amount));
+    this.getCurrentCustomerGroupCustomers();
+  }
+  getCurrentCustomerGroupCustomers() {
+    this.FullDetailDtos = this.dataService.getData('FullDetailDtos');
+    // this.selectedCustomerGroup.Customers =
+    //   this.FullDetailDtos.CustomerGroupToCustomerMapDTOs.filter(
+    //     (x) =>
+    //       x.ParentCustomerGroupId == this.selectedCustomerGroup.CustomerGroupId
+    //   ).map((x) => x.Customer);
+    this.FullDetailDtos.CustomerGroups.forEach((e) => {
+      e.Customers.forEach((c) => {
+        c.CustomerLoanTotal = this.getCurrentCustomerLoanAmount(c);
+        c.CustomerLoanCollectedAmout =
+          this.getCurrentCustomerLoanCollectedAmount(c);
+        c.CustomerLoanStartDate = this.getCurrentCustomerLoanStartDate(c);
+        c.CustomerLoanEndDate = this.getCurrentCustomerLoanEndDate(c);
+      });
+    });
+  }
+
+  getCurrentCustomerLoanAmount(currentCustomer: any) {
+    return this.FullDetailDtos.LoanDetailToCustomerMapDTOs.filter(
+      (x) => x.ParentCustomerId == currentCustomer.CustomerId
+    )
+      .map((y) => y.LoanDetail)
+      .reduce(
+        (sum, current) =>
+          sum +
+          (current.LoanAmountWithInterest == null
+            ? 0
+            : current.LoanAmountWithInterest),
+        0
+      );
+  }
+
+  getCurrentCustomerLoanCollectedAmount(currentCustomer: any) {
+    return this.FullDetailDtos.LoanDetailToCustomerMapDTOs.filter(
+      (x) => x.ParentCustomerId == currentCustomer.CustomerId
+    )
+      .map((y) => y.LoanDetail)
+      .reduce(
+        (sum, current) =>
+          sum +
+          (current.LoanCollectedAmount == null
+            ? 0
+            : current.LoanCollectedAmount),
+        0
+      );
+  }
+
+  getCurrentCustomerLoanStartEndDateText(currentCustomer: any) {
+    let fullDetailDtosForCurrentCustomer =
+      this.FullDetailDtos.LoanDetailToCustomerMapDTOs.filter(
+        (x) => x.ParentCustomerId == currentCustomer.CustomerId
+      );
+    if (fullDetailDtosForCurrentCustomer.length > 0) {
+      return (
+        'Start: ' +
+        this.getCurrentCustomerLoanStartDate(fullDetailDtosForCurrentCustomer) +
+        ' | End: ' +
+        this.getCurrentCustomerLoanEndDate(fullDetailDtosForCurrentCustomer)
+      );
+    } else {
+      return '';
+    }
+  }
+
+  getCurrentCustomerLoanStartDate(currenctCustomer: any) {
+    return moment(
+      this.FullDetailDtos.LoanDetailToCustomerMapDTOs.filter(
+        (x) => x.ParentCustomerId == currenctCustomer.CustomerId
+      )
+        .map((y: any) => y.LoanDetail.LoanStartDate)
+        .join()
+    ).toDate();
+    //.format('YYYY-MM-DD HH:mm');
+  }
+
+  getCurrentCustomerLoanEndDate(currenctCustomer: any) {
+    return moment(
+      this.FullDetailDtos.LoanDetailToCustomerMapDTOs.filter(
+        (x) => x.ParentCustomerId == currenctCustomer.CustomerId
+      )
+        .map((y: any) => y.LoanDetail.LoanEndDate)
+        .join()
+    ).toDate();
+    //.format('YYYY-MM-DD HH:mm');
   }
 
   onlyContainsNumbers = (str: string) => /^\d+$/.test(str);

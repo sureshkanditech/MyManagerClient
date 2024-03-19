@@ -261,11 +261,7 @@ export class GroupComponent implements OnInit, AfterContentChecked {
       );
   }
 
-  anotherCount: number = 0;
-
   getCurrentCustomerGroupLoanCollectedAmount(currentCustomerGroup: any) {
-    this.anotherCount++;
-    console.log(this.anotherCount);
     return this.fullDetailDtos.LoanDetailToLoanCollectionDetailMapDTOs.filter(
       (x) =>
         (currentCustomerGroup.Customers

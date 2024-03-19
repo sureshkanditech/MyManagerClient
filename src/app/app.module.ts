@@ -47,7 +47,8 @@ import {
 import { IconModule, IconSetService } from '@coreui/icons-angular';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { JwtInterceptor } from './services/http.interceptor';
-import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, provideHttpClient } from '@angular/common/http';
+import { AuthService } from './services/auth.service';
 
 const APP_CONTAINERS = [
   DefaultFooterComponent,
@@ -98,6 +99,8 @@ const APP_CONTAINERS = [
       useClass: JwtInterceptor,
       multi: true,
     },
+    provideHttpClient(),
+    AuthService,
   ],
   bootstrap: [AppComponent],
 })

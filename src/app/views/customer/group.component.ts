@@ -323,8 +323,28 @@ export class GroupComponent implements OnInit, AfterContentChecked {
           text.toLowerCase()
         ) ||
         CustomerGroupDto?.Customers?.filter((cust) =>
-          cust.searchCustomer(text.toLowerCase())
+          this.searchCustomer(cust, text.toLowerCase())
         )?.length > 0
+    );
+  }
+
+  searchCustomer(_customer, textToSearch) {
+    return (
+      _customer.CustomerId.toString()
+        .toLowerCase()
+        .includes(textToSearch.toLowerCase()) ||
+      _customer.CustomerName.toLowerCase().includes(
+        textToSearch.toLowerCase()
+      ) ||
+      _customer.CustomerPhone.toLowerCase().includes(
+        textToSearch.toLowerCase()
+      ) ||
+      _customer.CustomerAddress.toLowerCase().includes(
+        textToSearch.toLowerCase()
+      ) ||
+      _customer.CustomerAadhaarNumber.toLowerCase().includes(
+        textToSearch.toLowerCase()
+      )
     );
   }
 

@@ -23,7 +23,7 @@ export class LoginComponent {
     Swal.showLoading();
     this.authService.login(this.username, this.password).subscribe({
       next: () => {
-        this.router.navigate(['/dashboard']);
+        this.router.navigate(['/customer/group']);
         Swal.close();
       },
       error: (message) => {

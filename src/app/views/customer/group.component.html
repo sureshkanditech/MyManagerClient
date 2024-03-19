@@ -128,7 +128,7 @@
 
             <app-add-new-widget type="Group" (addGroup)="addNewCustomerGroup($event)"></app-add-new-widget>
             <input class="form-control form-control-sm col-sm-2 w-30 me-3" style="width: 25%; float: right !important;"
-              (input)="filterResults()" id="txtSearch" [(ngModel)]="searchString" name="txtSearch" />
+              (input)="filterResults()" autocomplete="off" id="txtSearch" [(ngModel)]="searchString" name="txtSearch" />
           </c-card-header>
           <c-card-body>
             <table class="tblGroups" [hover]="true" [responsive]="true" align="middle" cTable class="mb-0 border">

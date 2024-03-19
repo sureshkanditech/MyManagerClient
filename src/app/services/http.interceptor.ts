@@ -6,12 +6,13 @@ import {
   HttpEvent,
 } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { BASE_URL } from '../environment/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class JwtInterceptor implements HttpInterceptor {
-  apiUrl: string = 'BASE_URL';
+  apiUrl: string = BASE_URL;
 
   constructor() {
     console.log('JwtInterceptor is called');
@@ -33,7 +34,6 @@ export class JwtInterceptor implements HttpInterceptor {
         },
       });
     }
-
     return next.handle(request);
   }
 }

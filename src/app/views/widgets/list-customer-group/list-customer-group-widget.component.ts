@@ -10,21 +10,23 @@ import {
   Output,
 } from '@angular/core';
 import { cilList, cilShieldAlt, cilPlus, cilMinus } from '@coreui/icons';
-import { CustomerGroupDto } from 'src/app/interfaces/customer-group-dto.interface';
-import { CustomerDto } from 'src/app/interfaces/customer-dto.interface';
-import { CustomerGroup } from 'src/app/interfaces/customer-group.interface';
-import { Customer } from 'src/app/interfaces/customer.interface';
+import { CustomerGroupDto } from '../../../interfaces/customer-group-dto.interface';
+import { CustomerDto } from '../../../interfaces/customer-dto.interface';
+import { CustomerGroup } from '../../../interfaces/customer-group.interface';
+import { Customer } from '../../../interfaces/customer.interface';
 import {
   FullDetailsCustomerDto,
   FullDetailsCustomerGroupToCustomerMapDTO,
   FullDetailsDto,
-} from 'src/app/interfaces/full-details-dto.interface';
-import { LoanDetail } from 'src/app/interfaces/loan-detail.interface';
-import { CustomerService } from 'src/app/services/customer.service';
-import { DataService } from 'src/app/services/data.service';
+} from '../../../interfaces/full-details-dto.interface';
+import { LoanDetail } from '../../../interfaces/loan-detail.interface';
+import { CustomerService } from '../../../services/customer.service';
+import { DataService } from '../../../services/data.service';
 import Swal from 'sweetalert2';
 import { LoanDetailService } from '../../../services/loan-detail.service';
 import * as moment from 'moment';
+import { LoanCollectionDetailService } from '../../../services/loan-collection-detail.service';
+import { LoanCollectionDetail } from '../../../interfaces/loan-collection-detail-dto.interface';
 
 interface IUser {
   name: string;
@@ -50,11 +52,21 @@ export class ListCustomerGroupWidgetsComponent implements OnInit {
   createdBy: number = 0;
 
   addEMI(event: any) {
-    console.log(event);
-    debugger;
+    this.loanCollectionDetailService
+      .addInstallment(event.loanCollectionDetail)
+      .subscribe({
+        next: (data) => {
+          this.dataService.addData('FullDetailDtos', data);
+          this.processFullDetailsDtoData();
+          Swal.close();
+        },
+        error: (message) => {
+          Swal.fire('Error', message, 'error');
+        },
+      });
   }
+
   addLoan(event: any) {
-    console.log(event);
     this.createNewLoanDetail(event.loanDetail, this.createdBy);
   }
 
@@ -63,6 +75,8 @@ export class ListCustomerGroupWidgetsComponent implements OnInit {
       .createNewLoanDetail(loanDetail, createdBy)
       .subscribe({
         next: (data) => {
+          this.dataService.addData('FullDetailDtos', data);
+          this.processFullDetailsDtoData();
           Swal.close();
         },
         error: (message) => {
@@ -72,8 +86,6 @@ export class ListCustomerGroupWidgetsComponent implements OnInit {
   }
 
   addCustomer(addedCustomer: CustomerDto) {
-    console.log(addedCustomer);
-
     let CustomerGroupToCustomerMapDTO: FullDetailsCustomerGroupToCustomerMapDTO =
       new FullDetailsCustomerGroupToCustomerMapDTO();
     CustomerGroupToCustomerMapDTO.Customer = addedCustomer;
@@ -82,7 +94,9 @@ export class ListCustomerGroupWidgetsComponent implements OnInit {
 
     this.customerService.AddCustomer(CustomerGroupToCustomerMapDTO).subscribe({
       next: (data) => {
-        this.selectedCustomerGroup.Customers.push(addedCustomer);
+        // this.selectedCustomerGroup.Customers.push(addedCustomer);
+        this.dataService.addData('FullDetailDtos', data);
+        this.processFullDetailsDtoData();
         Swal.close();
       },
       error: (message) => {
@@ -193,26 +207,31 @@ export class ListCustomerGroupWidgetsComponent implements OnInit {
   progressPercentage: string | undefined;
 
   public FullDetailDtos: FullDetailsDto = new FullDetailsDto();
+  public InvestmentMasters: any;
 
   constructor(
     private changeDetectorRef: ChangeDetectorRef,
     private currencyPipe: CurrencyPipe,
     private customerService: CustomerService,
     private dataService: DataService,
-    private loanDetailService: LoanDetailService
+    private loanDetailService: LoanDetailService,
+    private loanCollectionDetailService: LoanCollectionDetailService
   ) {}
 
   ngOnInit(): void {
     this.amount = this.applyCurrentPipe(String(this.amount));
-    this.getCurrentCustomerGroupCustomers();
+    this.processFullDetailsDtoData();
   }
-  getCurrentCustomerGroupCustomers() {
+
+  processFullDetailsDtoData() {
     this.FullDetailDtos = this.dataService.getData('FullDetailDtos');
-    // this.selectedCustomerGroup.Customers =
-    //   this.FullDetailDtos.CustomerGroupToCustomerMapDTOs.filter(
-    //     (x) =>
-    //       x.ParentCustomerGroupId == this.selectedCustomerGroup.CustomerGroupId
-    //   ).map((x) => x.Customer);
+
+    this.InvestmentMasters = this.FullDetailDtos.InvestmentMasters;
+
+    this.FullDetailDtos.CustomerGroups.forEach((e) => {
+      e.Customers = this.getCurrentCustomerGroupCustomers(e);
+    });
+
     this.FullDetailDtos.CustomerGroups.forEach((e) => {
       e.Customers.forEach((c) => {
         c.CustomerLoanTotal = this.getCurrentCustomerLoanAmount(c);
@@ -222,6 +241,18 @@ export class ListCustomerGroupWidgetsComponent implements OnInit {
         c.CustomerLoanEndDate = this.getCurrentCustomerLoanEndDate(c);
       });
     });
+
+    let searchedCustomerGroups = this.FullDetailDtos.CustomerGroups.filter(
+      (x) => x.CustomerGroupId == this.selectedCustomerGroup.CustomerGroupId
+    );
+    if (searchedCustomerGroups.length > 0) {
+      this.selectedCustomerGroup = searchedCustomerGroups[0];
+    }
+  }
+  getCurrentCustomerGroupCustomers(currentCustomerGroup: any): CustomerDto[] {
+    return this.FullDetailDtos.CustomerGroupToCustomerMapDTOs.filter(
+      (x) => x.ParentCustomerGroupId == currentCustomerGroup.CustomerGroupId
+    ).map((y) => y.Customer);
   }
 
   getCurrentCustomerLoanAmount(currentCustomer: any) {
@@ -240,16 +271,16 @@ export class ListCustomerGroupWidgetsComponent implements OnInit {
   }
 
   getCurrentCustomerLoanCollectedAmount(currentCustomer: any) {
-    return this.FullDetailDtos.LoanDetailToCustomerMapDTOs.filter(
-      (x) => x.ParentCustomerId == currentCustomer.CustomerId
+    return this.FullDetailDtos.LoanDetailToLoanCollectionDetailMapDTOs.filter(
+      (x) => x.ParentLoanCustomerId == currentCustomer.CustomerId
     )
-      .map((y) => y.LoanDetail)
+      .map((y) => y.LoanCollectionDetail)
       .reduce(
         (sum, current) =>
           sum +
-          (current.LoanCollectedAmount == null
+          (current.LoanCollectionAmount == null
             ? 0
-            : current.LoanCollectedAmount),
+            : current.LoanCollectionAmount),
         0
       );
   }
@@ -317,8 +348,11 @@ export class ListCustomerGroupWidgetsComponent implements OnInit {
   public action = '';
   public modifiedInvestment = 0;
 
-  toggleLiveDemo() {
+  public profileCustomerSelected: CustomerDto | undefined;
+
+  toggleProfileModal(_profileCustomerSelected: CustomerDto | undefined) {
     this.visible = !this.visible;
+    this.profileCustomerSelected = _profileCustomerSelected;
   }
 
   handleLiveDemoChange(event: any) {

@@ -8,7 +8,7 @@
 </c-avatar>
 
 <c-modal alignment="center" backdrop="static" size="lg" id="addCustomerGroupModal" [visible]="visibleAddLoan"
-  (visibleChange)="handleAddLoanChange($event)">
+  (visibleChange)="handleAddLoanChange($event)" scrollable>
   <c-modal-header>
     <h5 cModalTitle>{{modalTitle}}</h5>
     <button (click)="toggleAddLoanModal()" cButtonClose></button>
@@ -16,15 +16,32 @@
   <c-modal-body>
     <c-row class="justify-content-center">
       <c-col xl="11" md="4" sm="4">
-        <form>
+        <form #LoanForm="ngForm">
+          <div cRow class="row">
+            <div class="col-sm-12">
+              <c-widget-stat-d color="primary" [style]="{ '--cui-card-cap-bg': '#3b5998' }"
+                [values]="[{ title: 'Investment', value: OutstandingInvestment }, { title: 'Loans', value: LoanedAmount }]"
+                class="mb-4">
+                <svg [cIcon]="icons.cilPlus" class="my-1 text-white" height="52"></svg>
+                <!-- <ng-container>
+                      <c-chart #chart="cChart" [data]="widget.data" [options]="chartOptions" class="position-absolute w-100 h-100"
+                        type="line">{{ chart.id }}</c-chart>
+                    </ng-container> -->
+              </c-widget-stat-d>
+            </div>
+          </div>
           <div cRow class="row mb-3">
             <div class="col-sm-12">
               <div cFormFloating>
                 <input cFormControl id="txtLoanAmount" placeholder="Enter Loan Amount" type="number" autocomplete="off"
-                  [(ngModel)]="loanDetail.LoanAmount" name="txtLoanAmount" (input)="calculateInterest()" />
+                  [(ngModel)]="loanDetail.LoanAmount" name="txtLoanAmount" (input)="calculateInterest()" required />
                 <label cLabel for="txtLoanAmount">Enter Loan Amount</label>
+                <div class="invalid-feedback" style="display: block; text-align: left;" *ngIf="errorMessageLoanAmount">
+                  {{errorMessageLoanAmountText}}</div>
               </div>
             </div>
+          </div>
+          <div cRow class="row mb-3">
             <div class="col-sm-12">
               <div cFormFloating>
                 <input cFormControl id="txtLoanWithInterest" placeholder="Enter Loan with interest" type="number"
@@ -33,6 +50,8 @@
                 <label cLabel for="txtLoanWithInterest">Enter Loan with interest</label>
               </div>
             </div>
+          </div>
+          <div cRow class="row mb-3">
             <div class="col-sm-12">
               <div cFormFloating>
                 <input cFormControl id="txtEMIPerInstallment" placeholder="Installment Amount" type="number"
@@ -47,10 +66,12 @@
               <div cFormFloating>
                 <input cFormControl id="txtLoanStartDate" placeholder="Loan Start Date" type="date" autocomplete="off"
                   [value]="loanDetail.LoanStartDate | date:'yyyy-MM-dd'" name="txtLoanStartDate"
-                  (input)="calculateEndDate($event)" />
+                  (input)="calculateEndDate($event)" required />
                 <label cLabel for="txtLoanStartDate">Loan Start Date</label>
               </div>
             </div>
+          </div>
+          <div cRow class="row mb-3">
             <div class="col-sm-12">
               <div cFormFloating>
                 <input cFormControl id="txtLoanEndDate" placeholder="Loan End Date" type="date" autocomplete="off"
@@ -68,20 +89,62 @@
     <button (click)="toggleAddLoanModal()" cButton color="secondary">
       Close
     </button>
-    <button cButton color="primary" (click)="handleModalSubmitEvent(action)">{{modalSubmitButtonText}}</button>
+    <button cButton color="primary" (click)="handleModalSubmitEvent(action)"
+      [disabled]="errorMessageLoanAmount || errorLoanStartDate">{{modalSubmitButtonText}}</button>
   </c-modal-footer>
 </c-modal>
 
 
 
 
-<c-modal alignment="center" backdrop="static" size="sm" id="addCustomerModal" [visible]="visibleAddEMI"
-  (visibleChange)="handleAddEMIChange($event)">
+<c-modal alignment="center" backdrop="static" size="lg" id="addCustomerModal" [visible]="visibleAddEMI"
+  (visibleChange)="handleAddEMIChange($event)" scrollable>
   <c-modal-header>
     <h5 cModalTitle>{{modalTitle}}</h5>
     <button (click)="toggleAddEMIModal()" cButtonClose></button>
   </c-modal-header>
   <c-modal-body>
+    <c-row class="g-3 mb-3">
+      <c-col [xs]>
+        <div cFormFloating>
+          <input aria-label="Total Loan Amount" cFormControl placeholder="Total Loan Amount"
+            id="txtTotalLoanAmount{{selectedCustomer.CustomerId}}" type="number"
+            [(ngModel)]=selectedCustomer.CustomerLoanTotal />
+          <label cLabel for="txtTotalLoanAmount{{selectedCustomer.CustomerId}}">Total Loan Amount</label>
+        </div>
+      </c-col>
+    </c-row>
+
+    <c-row class="g-3 mb-3">
+      <c-col [xs]>
+        <div cFormFloating>
+          <input aria-label="Total Collected Amount" cFormControl placeholder="Total Collected Amount"
+            id="txtTotalCollectedAmount{{selectedCustomer.CustomerId}}" type="number"
+            [(ngModel)]=selectedCustomer.CustomerLoanCollectedAmout />
+          <label cLabel for="txtTotalCollectedAmount{{selectedCustomer.CustomerId}}">Total Collected Amount</label>
+        </div>
+      </c-col>
+    </c-row>
+    <c-row class="g-3 mb-3">
+      <c-col [xs]>
+        <div cFormFloating>
+          <input aria-label="Installment Date" cFormControl placeholder="Installment Date"
+            id="txtInstallmentDate{{selectedCustomer.CustomerId}}" type="text" readonly [(ngModel)]="InstallmentDate" />
+          <label cLabel for="txtInstallmentDate{{selectedCustomer.CustomerId}}">Installment Date</label>
+        </div>
+      </c-col>
+    </c-row>
+
+    <c-row class="g-3 mb-3">
+      <c-col [xs]>
+        <div cFormFloating>
+          <input aria-label="First name" cFormControl placeholder="First name"
+            id="txtInstallmentAmout{{selectedCustomer.CustomerId}}" type="number" [(ngModel)]="InstallmentAmount" />
+          <label cLabel for="txtInstallmentAmout{{selectedCustomer.CustomerId}}">Installment Amount</label>
+        </div>
+      </c-col>
+    </c-row>
+    <!--     
     <c-row class="justify-content-center">
       <c-col xl="8" md="4" sm="4">
         <form>
@@ -93,7 +156,7 @@
           </div>
         </form>
       </c-col>
-    </c-row>
+    </c-row> -->
   </c-modal-body>
   <c-modal-footer>
     <button (click)="toggleAddEMIModal()" cButton color="secondary">

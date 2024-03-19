@@ -36,7 +36,7 @@ export class FullDetailsInvestmentMastersDto {
   InvestmentMasterId!: number;
   InvestmentAmount!: number;
   LoanAmount!: number;
-  outstandingInvestment!: number;
+  OutstandingInvestment!: number;
 }
 
 export class FullDetailsLoanDetailDto {
@@ -67,6 +67,7 @@ export class FullDetailsLoanCollectionDetailDto {
 }
 export class FullDetailsLoanDetailToLoanCollectionDetailMapDTO {
   ParentLoanDetailId!: number;
+  ParentLoanCustomerId!: number;
   LoanCollectionDetail!: FullDetailsLoanCollectionDetailDto;
 }
 

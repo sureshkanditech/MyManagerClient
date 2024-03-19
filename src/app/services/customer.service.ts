@@ -6,7 +6,10 @@ import { Customer } from '../interfaces/customer.interface';
 import { CustomerGroupDto } from '../interfaces/customer-group-dto.interface';
 import { CustomerDto } from '../interfaces/customer-dto.interface';
 import { BASE_URL } from '../environment/environment';
-import { FullDetailsCustomerGroupToCustomerMapDTO } from '../interfaces/full-details-dto.interface';
+import {
+  FullDetailsCustomerGroupToCustomerMapDTO,
+  FullDetailsDto,
+} from '../interfaces/full-details-dto.interface';
 
 @Injectable({
   providedIn: 'root',
@@ -18,7 +21,7 @@ export class CustomerService {
 
   AddCustomer(
     CustomerGroupToCustomerMapDTO: FullDetailsCustomerGroupToCustomerMapDTO
-  ): Observable<CustomerDto[]> {
+  ): Observable<FullDetailsDto> {
     const url = `${this.baseUrl}/Customers/CreateCustomer`;
 
     const httpOptions = {
@@ -26,9 +29,9 @@ export class CustomerService {
     };
 
     return this.http
-      .post<CustomerDto[]>(url, CustomerGroupToCustomerMapDTO, httpOptions)
+      .post<FullDetailsDto>(url, CustomerGroupToCustomerMapDTO, httpOptions)
       .pipe(
-        map((response: any) => {
+        map((response: FullDetailsDto) => {
           console.log(response);
           return response;
         }),
@@ -73,7 +76,7 @@ export class CustomerService {
 
     const httpOptions = {
       headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
-      params: new HttpParams().append('aadhaar', aadhaar),
+      params: new HttpParams().append('aadhaar', aadhaar.toString()),
     };
 
     return this.http.get<CustomerDto>(url, httpOptions).pipe(

@@ -17,7 +17,7 @@ export class CustomerGroupService {
   AddCustomerGroup(
     customerGroup: CustomerGroupDto,
     createdBy: number
-  ): Observable<CustomerGroupDto[]> {
+  ): Observable<FullDetailsDto> {
     const url = `${this.baseUrl}/CustomerGroups`;
 
     const httpOptions = {

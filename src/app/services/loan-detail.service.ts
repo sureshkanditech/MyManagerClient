@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable, catchError, map, throwError } from 'rxjs';
 import { BASE_URL } from '../environment/environment';
 import { LoanDetail } from '../interfaces/loan-detail.interface';
+import { FullDetailsDto } from '../interfaces/full-details-dto.interface';
 
 @Injectable({
   providedIn: 'root',
@@ -15,16 +16,15 @@ export class LoanDetailService {
   createNewLoanDetail(
     loanDetail: LoanDetail,
     createdBy: number
-  ): Observable<LoanDetail[]> {
+  ): Observable<FullDetailsDto> {
     const url = `${this.baseUrl}/LoanDetails`;
 
     const httpOptions = {
       headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
     };
 
-    return this.http.post<LoanDetail>(url, loanDetail, httpOptions).pipe(
-      map((response: any) => {
-        console.log(response);
+    return this.http.post<FullDetailsDto>(url, loanDetail, httpOptions).pipe(
+      map((response) => {
         return response;
       }),
       catchError((err: { error: { message: any } }) => {

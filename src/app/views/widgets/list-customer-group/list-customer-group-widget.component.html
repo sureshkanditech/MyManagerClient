@@ -20,7 +20,9 @@
           <c-avatar size="md" src="./assets/img/avatars/{{(i + 1) % 6}}.jpg" status="primary"></c-avatar>
         </td>
         <td>
-          <div>{{ currentCustomer.CustomerName }}</div>
+          <div style="cursor: pointer; text-decoration: underline;" (click)="toggleProfileModal(currentCustomer)">{{
+            currentCustomer.CustomerName }}
+          </div>
           <div class="small text-medium-emphasis text-nowrap">
             <span>
               @if (currentCustomer.CustomerLoanStartDate?.toString() != 'Invalid Date'){
@@ -77,7 +79,7 @@
           </c-progress>
         </td>
         <td class="text-center">
-          <div>{{ currentCustomer.CustomerAadhaarNumber }}</div>
+          <div>{{ currentCustomer.CustomerPhone }}</div>
         </td>
         <td class="text-center">
           <div style=" width: 100%; display: flex;">
@@ -150,7 +152,7 @@
 
 
 
-
+<!-- 
 
 
 <c-modal alignment="center" backdrop="static" size="sm" id="liveDemoModal" [visible]="visible"
@@ -177,5 +179,58 @@
       Close
     </button>
     <button cButton color="primary" (click)="handleModalSubmitEvent(action)">{{modalSubmitButtonText}}</button>
+  </c-modal-footer>
+</c-modal> -->
+
+
+
+
+<c-modal alignment="center" backdrop="static" size="sm" id="liveDemoModal" [visible]="visible"
+  (visibleChange)="handleLiveDemoChange($event)" scrollable>
+  <c-modal-header>
+    <h5 cModalTitle>{{modalTitle}}</h5>
+    <button (click)="toggleProfileModal(undefined)" cButtonClose></button>
+  </c-modal-header>
+  <c-modal-body>
+    <section style="background-color: #eee;">
+      <div class="container">
+        <div class="row d-flex justify-content-center align-items-center h-100">
+          <div class="col-sm-12">
+
+            <div class="card" style="border-radius: 15px;">
+              <div class="card-body text-center">
+                <div class="mt-3 mb-4">
+                  <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava2-bg.webp"
+                    class="rounded-circle img-fluid" style="width: 100px;" />
+                </div>
+                <h4 class="mb-2">{{ profileCustomerSelected?.CustomerName }}</h4>
+                <p class="text-muted mb-4">{{ profileCustomerSelected?.CustomerPhone }} <span class="mx-2">|</span> {{
+                  profileCustomerSelected?.CustomerAddress }}</p>
+                <div class="d-flex justify-content-between text-center mt-5 mb-2">
+                  <div>
+                    <p class="mb-2 h5">8471</p>
+                    <p class="text-muted mb-0">Wallets Balance</p>
+                  </div>
+                  <div class="px-3">
+                    <p class="mb-2 h5">8512</p>
+                    <p class="text-muted mb-0">Income amounts</p>
+                  </div>
+                  <div>
+                    <p class="mb-2 h5">4751</p>
+                    <p class="text-muted mb-0">Total Transactions</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </section>
+  </c-modal-body>
+  <c-modal-footer>
+    <button (click)="toggleProfileModal(undefined)" cButton color="secondary">
+      Close
+    </button>
   </c-modal-footer>
 </c-modal>

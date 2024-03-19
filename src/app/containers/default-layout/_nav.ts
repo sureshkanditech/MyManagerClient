@@ -24,9 +24,8 @@ export const navItems: INavData[] = [
     },
   },
   {
-    name: 'Customer',
+    name: "Today's collection",
     url: '/customer/customer',
-    linkProps: { fragment: 'someAnchor' },
     iconComponent: { name: 'cil-pencil' },
   },
   {

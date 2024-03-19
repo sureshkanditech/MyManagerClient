@@ -23,4 +23,8 @@ $enable-rtl: true;
 @import "custom";
 
 /* Importing Bootstrap SCSS file. */
-@import 'bootstrap/scss/bootstrap';
+@import "bootstrap/scss/bootstrap";
+
+.swal2-container {
+  z-index: 9999;
+}

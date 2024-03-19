@@ -12,15 +12,15 @@ import { DOCUMENT } from '@angular/common';
 
 import { getStyle, rgbToHex } from '@coreui/utils';
 import { DomSanitizer } from '@angular/platform-browser';
-import { CustomerGroup } from 'src/app/interfaces/customer-group.interface';
+import { CustomerGroup } from '../../interfaces/customer-group.interface';
 import Swal from 'sweetalert2';
-import { CustomerGroupService } from 'src/app/services/customer-group.service';
+import { CustomerGroupService } from '../../services/customer-group.service';
 import { animate, style, transition, trigger } from '@angular/animations';
 import { cilList, cilShieldAlt, cilPlus, cilMinus } from '@coreui/icons';
-import { CustomerGroupDto } from 'src/app/interfaces/customer-group-dto.interface';
-import { FullDetailsDto } from 'src/app/interfaces/full-details-dto.interface';
-import { DataService } from 'src/app/services/data.service';
-import { CustomerDto } from 'src/app/interfaces/customer-dto.interface';
+import { CustomerGroupDto } from '../../interfaces/customer-group-dto.interface';
+import { FullDetailsDto } from '../../interfaces/full-details-dto.interface';
+import { DataService } from '../../services/data.service';
+import { CustomerDto } from '../../interfaces/customer-dto.interface';
 
 interface IUser {
   name: string;
@@ -214,24 +214,27 @@ export class GroupComponent implements OnInit, AfterContentChecked {
 
     return this.customerGroupService.getFullDetailsDtos().subscribe({
       next: (data) => {
-        this.fullDetailDtos = data;
-        this.fullDetailDtos.CustomerGroups.forEach((e) => {
-          e.Customers = this.getCurrentCustomerGroupCustomers(e);
-        });
-        this.fullDetailDtos.CustomerGroups.forEach((e) => {
-          e.CustomerGroupLoanTotal = this.getCurrentCustomerGroupLoanAmount(e);
-          e.CustomerGroupLoanPaidAmount =
-            this.getCurrentCustomerGroupLoanCollectedAmount(e);
-        });
-        this.filteredCustomerGroups = this.fullDetailDtos.CustomerGroups;
-        this.dataService.addData('FullDetailDtos', this.fullDetailDtos);
-
+        this.processFullDetailsDtoData(data);
         Swal.close();
       },
       error: (message) => {
         Swal.fire('Error', message, 'error');
       },
     });
+  }
+  processFullDetailsDtoData(data: FullDetailsDto) {
+    this.fullDetailDtos = data;
+    this.fullDetailDtos.CustomerGroups.forEach((e) => {
+      e.Customers = this.getCurrentCustomerGroupCustomers(e);
+    });
+    this.fullDetailDtos.CustomerGroups.forEach((e) => {
+      e.CustomerGroupLoanTotal = this.getCurrentCustomerGroupLoanAmount(e);
+      e.CustomerGroupLoanPaidAmount =
+        this.getCurrentCustomerGroupLoanCollectedAmount(e);
+    });
+    this.filteredCustomerGroups = this.fullDetailDtos.CustomerGroups;
+    this.customerGroupList = this.fullDetailDtos.CustomerGroups;
+    this.dataService.addData('FullDetailDtos', this.fullDetailDtos);
   }
 
   getCurrentCustomerGroupCustomers(currentCustomerGroup: any): CustomerDto[] {
@@ -263,19 +266,20 @@ export class GroupComponent implements OnInit, AfterContentChecked {
   getCurrentCustomerGroupLoanCollectedAmount(currentCustomerGroup: any) {
     this.anotherCount++;
     console.log(this.anotherCount);
-    return this.fullDetailDtos.LoanDetailToCustomerMapDTOs.filter((x) =>
-      (currentCustomerGroup.Customers
-        ? currentCustomerGroup.Customers.map((c: any) => c.CustomerId)
-        : []
-      ).includes(x.ParentCustomerId)
+    return this.fullDetailDtos.LoanDetailToLoanCollectionDetailMapDTOs.filter(
+      (x) =>
+        (currentCustomerGroup.Customers
+          ? currentCustomerGroup.Customers.map((c: any) => c.CustomerId)
+          : []
+        ).includes(x.ParentLoanDetailId)
     )
-      .map((y) => y.LoanDetail)
+      .map((y) => y.LoanCollectionDetail)
       .reduce(
         (sum, current) =>
           sum +
-          (current.LoanCollectedAmount == null
+          (current.LoanCollectionAmount == null
             ? 0
-            : current.LoanCollectedAmount),
+            : current.LoanCollectionAmount),
         0
       );
   }
@@ -332,7 +336,7 @@ export class GroupComponent implements OnInit, AfterContentChecked {
     console.log(addGroup);
     this.customerGroupService.AddCustomerGroup(addGroup, 2).subscribe({
       next: (data) => {
-        this.customerGroupList = data;
+        this.processFullDetailsDtoData(data);
         this.filterResults();
         Swal.close();
       },

@@ -33,7 +33,9 @@ import { LoanDetailsComponent } from './loan-details.component';
 import { FlexLayoutModule, FlexModule } from '@angular/flex-layout';
 import { FormsModule } from '@angular/forms';
 import { DataService } from '../../services/data.service';
-import { LoanDetailService } from 'src/app/services/loan-detail.service';
+import { LoanDetailService } from '../../services/loan-detail.service';
+import { LoanCollectionDetailService } from '../../services/loan-collection-detail.service';
+import { InvestmentService } from '../../services/investment.service';
 
 @NgModule({
   imports: [
@@ -73,6 +75,8 @@ import { LoanDetailService } from 'src/app/services/loan-detail.service';
     provideHttpClient(),
     DataService,
     LoanDetailService,
+    LoanCollectionDetailService,
+    InvestmentService,
   ],
 })
 export class CustomerModule {}

@@ -14,8 +14,11 @@ import { CustomerGroup } from '../../../interfaces/customer-group.interface';
 import { Customer } from '../../../interfaces/customer.interface';
 import { LoanDetail } from '../../../interfaces/loan-detail.interface';
 import * as moment from 'moment';
-import { CustomerGroupDto } from 'src/app/interfaces/customer-group-dto.interface';
-import { CustomerDto } from 'src/app/interfaces/customer-dto.interface';
+import { CustomerGroupDto } from '../../../interfaces/customer-group-dto.interface';
+import { CustomerDto } from '../../../interfaces/customer-dto.interface';
+import { DataService } from '../../../services/data.service';
+import { FullDetailsDto } from '../../../interfaces/full-details-dto.interface';
+import { LoanCollectionDetail } from '../../../interfaces/loan-collection-detail-dto.interface';
 
 interface IUser {
   name: string;
@@ -44,14 +47,6 @@ export class ManageLoanWidgetsComponent implements OnInit {
     }
     return new Date();
   }
-  addDays(date: Date, days: any) {
-    debugger;
-    let currentDate = moment();
-
-    let result = new Date(date);
-    result.setDate(result.getDate() + days);
-    return result;
-  }
 
   txtEMIPerInstallment: any;
 
@@ -74,6 +69,7 @@ export class ManageLoanWidgetsComponent implements OnInit {
       moment(this.loanDetail.LoanStartDate),
       100
     );
+    this.errorLoanStartDate = false;
   }
   calculateInterest() {
     this.loanDetail.LoanAmountWithInterest =
@@ -81,6 +77,12 @@ export class ManageLoanWidgetsComponent implements OnInit {
     this.txtEMIPerInstallment = (
       this.loanDetail.LoanAmountWithInterest / 100
     ).toFixed(0);
+    this.errorMessageLoanAmount =
+      this.loanDetail.LoanAmount > this.OutstandingInvestment ? true : false;
+    this.errorMessageLoanAmountText =
+      this.loanDetail.LoanAmount > this.OutstandingInvestment
+        ? 'Loan amount is greater than Outstanding Investment'
+        : '';
   }
   icons = { cilList, cilShieldAlt, cilPlus, cilMinus };
   expandUser: any;
@@ -108,14 +110,31 @@ export class ManageLoanWidgetsComponent implements OnInit {
   @Input()
   selectedCustomer: CustomerDto = new CustomerDto();
 
+  public FullDetailDtos: FullDetailsDto = new FullDetailsDto();
+  public OutstandingInvestment: any;
+  public LoanedAmount: any;
+  public errorMessageLoanAmount: any = false;
+  public errorMessageLoanAmountText: any;
+  public errorLoanStartDate: any = true;
+
   constructor(
     private changeDetectorRef: ChangeDetectorRef,
-    private currencyPipe: CurrencyPipe
+    private currencyPipe: CurrencyPipe,
+    private dataService: DataService
   ) {}
 
   ngOnInit(): void {
     this.buttonText = 'Add ' + this.type;
     this.amount = this.applyCurrentPipe(String(this.amount));
+
+    this.FullDetailDtos = this.dataService.getData('FullDetailDtos');
+
+    this.OutstandingInvestment =
+      this.FullDetailDtos.InvestmentMasters[0]?.OutstandingInvestment;
+    this.LoanedAmount = this.FullDetailDtos.InvestmentMasters[0]?.LoanAmount;
+
+    this.InstallmentDate = moment(new Date()).format('DD-MM-YYYY');
+    this.InstallmentAmount = this.selectedCustomer.CustomerLoanTotal / 100;
   }
 
   onlyContainsNumbers = (str: string) => /^\d+$/.test(str);
@@ -171,8 +190,8 @@ export class ManageLoanWidgetsComponent implements OnInit {
   }
 
   openAddNewAddEMI() {
-    this.modalTitle = 'Add New AddEMI';
-    this.modalSubmitButtonText = 'Add';
+    this.modalTitle = 'Installment Collection';
+    this.modalSubmitButtonText = 'Collect';
     this.modalTextboxPlaceholder = 'Investment';
     this.action = 'add';
     this.modifiedInvestment = 0;
@@ -198,13 +217,24 @@ export class ManageLoanWidgetsComponent implements OnInit {
       this.addLoan.emit({ loanDetail: this.loanDetail });
       this.visibleAddLoan = false;
     } else if (this.type == 'AddEMI') {
-      this.deductEmit.emit({
-        deductedInvestment: this.modifiedInvestment,
-      });
+      let loanCollectionDetail: LoanCollectionDetail =
+        new LoanCollectionDetail();
+      loanCollectionDetail.LoanCollectionAmount = this.InstallmentAmount;
+      loanCollectionDetail.LoanCollectionBy = 1;
+      loanCollectionDetail.MapCustomer = this.selectedCustomer.CustomerId;
+      loanCollectionDetail.LoanCollectionForDate = moment(
+        this.InstallmentDate
+      ).toDate();
+      loanCollectionDetail.LoanCollectionOn = moment(new Date()).toDate();
+
+      this.deductEmit.emit({ loanCollectionDetail: loanCollectionDetail });
       this.visibleAddEMI = false;
     }
   }
 
   @Output() addLoan = new EventEmitter<any>();
   @Output() deductEmit = new EventEmitter<any>();
+
+  public InstallmentDate: any;
+  public InstallmentAmount: any;
 }

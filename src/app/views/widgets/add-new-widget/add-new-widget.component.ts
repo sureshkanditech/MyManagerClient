@@ -9,16 +9,16 @@ import {
   Output,
 } from '@angular/core';
 import { cilList, cilShieldAlt, cilPlus, cilMinus } from '@coreui/icons';
-import { CustomerGroupDto } from 'src/app/interfaces/customer-group-dto.interface';
-import { CustomerDto } from 'src/app/interfaces/customer-dto.interface';
-import { CustomerGroup } from 'src/app/interfaces/customer-group.interface';
-import { Customer } from 'src/app/interfaces/customer.interface';
+import { CustomerGroupDto } from '../../../interfaces/customer-group-dto.interface';
+import { CustomerDto } from '../../../interfaces/customer-dto.interface';
+import { CustomerGroup } from '../../../interfaces/customer-group.interface';
+import { Customer } from '../../../interfaces/customer.interface';
 import {
   FullDetailsCustomerGroupToCustomerMapDTO,
   FullDetailsDto,
-} from 'src/app/interfaces/full-details-dto.interface';
-import { CustomerService } from 'src/app/services/customer.service';
-import { DataService } from 'src/app/services/data.service';
+} from '../../../interfaces/full-details-dto.interface';
+import { CustomerService } from '../../../services/customer.service';
+import { DataService } from '../../../services/data.service';
 import Swal from 'sweetalert2';
 
 @Component({

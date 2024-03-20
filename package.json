@@ -11,8 +11,8 @@
   },
   "scripts": {
     "ng": "ng",
-    "start": "node \"node_modules/npm/bin/npm-cli.js\" \"run\" \"serve\"",
-    "build": "node \"node_modules/npm/bin/npm-cli.js\" \"run\" \"build\"",
+    "start": "ng serve",
+    "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
   },
